@@ -1,0 +1,911 @@
+*** Settings ***
+Library           Screenshot
+Library           AutoItLibrary
+Library           Selenium2Library
+Library           DateTime
+Resource          资源库/keyword.txt
+Resource          资源库/Variables.txt
+
+*** Test Cases ***
+优惠券--新增优惠券
+    [Documentation]    依赖(0)
+    ...    新建优惠券名称：${全局关键字}优惠券
+    click link    id=hnav-170    #营销模块
+    sleep    2
+    click link    id=stnav-598    #营销中心
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[1]    #优惠券管理
+    wait until page contains element    id=addCoupon    2
+    click link    id=addCoupon    #新增优惠券
+    sleep    2
+    wait until page contains element    name=txtCouponName    3
+    input text    name=txtCouponName    ${全局关键字}优惠券    #优惠券名称
+    input text    name=txtCouponValue    1    #面值
+    click element    id=NoCondition    #不限制
+    sleep    2
+    click element    id=BeginDate
+    sleep    3
+    click element    xpath=//html/body/div[4]/div[4]/table/tfoot/tr/th[2]
+    ${etime}    get time
+    ${edtime}    add time to date    ${etime}    10minutes
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day} ${datetime.hour}:${datetime.minute}:${datetime.second}
+    input text    id=EndDate    ${endtime}
+    sleep    2
+    select checkbox    id=coupontype1    #优惠类型
+    select checkbox    id=coupontype2
+    select checkbox    id=coupontype3
+    sleep    2
+    input text    id=txtStockNum    100    #总量
+    sleep    2
+    click element    id=selectAll    #适用会员
+    wait until page contains element    id=MaxReceivNum    2
+    select from list by value    id=MaxReceivNum    10    #每人限领
+    sleep    3
+    click element    xpath=//*[@id="Save"]
+    sleep    2
+    #验证优惠券    #优惠券查找
+    input text    id=CouponName    ${全局关键字}优惠券
+    sleep    2
+    click element    id=btnSearch
+    sleep    2
+    page should contain    ${全局关键字}优惠券    loglevel=优惠券名与预期值不符
+
+优惠券--注册送优惠券
+    [Documentation]    依赖(0）（24.1）
+    ...    应用优惠券名称：${全局关键字}优惠券
+    ...    应用会员：@{会员帐号}[1]
+    #开启注册送优惠券
+    click link    id=hnav-170    #营销
+    sleep    2
+    click link    id=stnav-598    #营销中心
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[2]/span    #注册送优惠券
+    sleep    2
+    click element    xpath=//*[@id="mySwitch"]/div/label    #开启注册送优惠券
+    sleep    2
+    select from list by label    id=ddlCouponList    ${全局关键字}优惠券
+    click element    id=BeginDate
+    sleep    1
+    click element    xpath=//html/body/div[2]/div[4]/table/tfoot/tr/th[2]
+    ${etime}    get time
+    ${edtime}    add time to date    ${etime}    3minutes
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day} ${datetime.hour}:${datetime.minute}:${datetime.second}
+    input text    id=EndDate    ${endtime}
+    wait until page contains element    id=SaveSetRegisterSend    2
+    click button    id=SaveSetRegisterSend
+    sleep    2
+    #注册会员，验证是否赠送优惠券
+    click link    id=hnav-612
+    sleep    3
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    1
+    ${memberG}    set variable    @{会员帐号}[1]
+    ${wc}    list windows
+    select window    ${wc[1]}
+    sleep    2
+    会员注册    ${memberG}
+    #查看会员是否有可用优惠券
+    sleep    2
+    ${number}    get text    xpath=//*[@id="sct-mark"]/div[1]/a/p[1]
+    Should Be Equal As Integers    ${number}    1
+    click element    xpath=//*[@id="sct-mark"]/div[1]/a/p[1]    #查看优惠券
+    sleep    2
+    page should contain    ${全局关键字}优惠券
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    close window
+    sleep    1
+    select window    ${wc[0]}
+    #关闭注册送优惠券
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[2]/span
+    sleep    2
+    click element    xpath=//*[@id="mySwitch"]/div/label    #关闭注册送优惠券
+    sleep    2
+
+优惠券--手动发送
+    [Documentation]    依赖(0)(2)（24.1）
+    ...    应用优惠券名称：${全局关键字}优惠券
+    ...    应用会员：@{会员帐号}[1]
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[3]
+    sleep    2
+    select from list by label    id=ddlCouponList    ${全局关键字}优惠券
+    click element    id=SendUserName
+    sleep    1
+    input text    id=UserName    @{会员帐号}[1]
+    sleep    1
+    click button    id=SendCoupon
+    sleep    2
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    1
+    ${wc}    list windows
+    select window    ${wc[1]}
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    会员登录    @{会员帐号}[1]
+    sleep    2
+    ${number}    get text    xpath=//*[@id="sct-mark"]/div[1]/a/p[1]
+    Should Be Equal As Integers    ${number}    2    #验证优惠券数量
+    click element    xpath=//*[@id="sct-mark"]/div[1]/a/p[1]
+    sleep    2
+    page should contain    ${全局关键字}优惠券
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    1
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    2
+    close window
+    select window    ${wc[0]}
+    sleep    2
+    #删除注册送优惠券会员
+    click element    link=会员    #点击会员
+    sleep    1
+    click element    link=会员列表
+    sleep    1
+    input text    id=CellPhone    @{会员帐号}[1]
+    click element    id=btn_Search
+    sleep    2
+    click element    id=selectAll    #勾选会员
+    sleep    1
+    click element    id=btnDelMembers    #删除
+    sleep    2
+    click element    id=DelMembersAll    #是
+    sleep    1
+    Select From List By Index    id=Status    2    #选择已删除
+    click element    id=btn_Search    #搜索
+    sleep    1
+    click element    id=selectAll    #勾选
+    sleep    1
+    click element    id=ShowRealDel    #点击删除
+    sleep    2
+    click element    id=RelDelMembersAll    #是
+    sleep    1
+
+优惠券--自助领取
+    [Documentation]    24.23依赖(0)(2)(4.1)（24.1）
+    ...    应用优惠券名称：${全局关键字}优惠券
+    ...    应用会员：@{会员帐号}[0]
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    1
+    ${wc}    list windows
+    select window    ${wc[1]}
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    会员登录    @{会员帐号}[0]
+    sleep    2
+    ${number}    get text    xpath=//*[@id="sct-mark"]/div[1]/a/p[1]
+    select window    ${wc[0]}
+    sleep    2
+    click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
+    sleep    2
+    ${wc}    list windows
+    select window    ${wc[2]}
+    sleep    2
+    Selenium2Library.Mouse Down    id=coupon
+    sleep    2
+    click element    xpath=//*[@id="coupon"]/div
+    sleep    2
+    click link    xpath=//*[@id="selectedCoupon"]/div/div[1]/a
+    sleep    2
+    close window
+    select window    ${wc[1]}
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心,刷新页面
+    ${numbertwo}    get text    xpath=//*[@id="sct-mark"]/div[1]/a/p[1]
+    ${numbertend}    Execute JavaScript    return ${number}+1
+    sleep    1
+    should be equal as integers    ${numbertwo}    ${numbertend}
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    1
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    2
+    close window
+    sleep    1
+    select window    ${wc[0]}    #回到首页
+
+优惠券--使用优惠券
+    [Documentation]    依赖(0)(2)(4.1)（24.12）
+    ...    应用优惠券名称：${全局关键字}优惠券
+    ...    应用会员：@{会员帐号}[0]
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    2
+    ${wc}    list windows
+    select window    ${wc[1]}
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    会员登录    @{会员帐号}[0]
+    sleep    2
+    ${number}    get text    xpath=//*[@id="sct-mark"]/div[2]/a/p[1]
+    select window    ${wc[0]}
+    sleep    2
+    click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
+    ${商品价格}    get text    xpath=//*[@id="list"]/tbody/tr/td[4]/div/p[2]/span    #获取商品价格
+    ${转化商品价格}    Evaluate    int(${商品价格})
+    ${优惠后的价格}    Evaluate    int(${${转化商品价格}-1})
+    log    ${优惠后的价格}
+    sleep    2
+    ${wc}    list windows
+    select window    ${wc[2]}
+    sleep    2
+    click link    id=btnAddToBuy
+    sleep    1
+    click button    id=btnBuyNow
+    sleep    1
+    ${coupontext}    get text    id=showCoupon_0
+    should contain    ${coupontext}    直减1    #检查已选中优惠券
+    ${totalmoney}    get text    id=AllSumPrice
+    should be equal as numbers    ${totalmoney}    ${优惠后的价格}
+    click link    id=submit    #提交订单
+    sleep    1
+    click link    id=link-offlinepay
+    sleep    1
+    click link    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
+    sleep    1
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    close window
+    select window    ${wc[1]}
+    close window
+    select window    ${wc[0]}
+    sleep    1
+    click link    id=hnav-10    #回到后台，检查订单
+    sleep    1
+    click link    id=stnav-76
+    sleep    1
+    input text    id=input-prodname    单规格
+    click element    id=btn-query
+    sleep    1
+    ${Htotalmoney}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/p/strong
+    ${去符号}    Should Match Regexp    ${Htotalmoney}    \\d+    #正则去除￥
+    #${转化去符号}    Evaluate    int(${去符号})
+    #should contain    ${转化去符号}    ${优惠后的价格}
+    should be equal as integers    ${去符号}    ${优惠后的价格}
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[4]/a[1]    #查看详情
+    ${wc}    list windows
+    select window    ${wc[1]}
+    sleep    2
+    ${couponname}    get text    xpath=//*[@id="tr-prodinfo"]/td[2]/div/div/p[2]
+    should contain    ${couponname}    优惠券：${全局关键字}优惠券￥1.00
+    sleep    1
+    close window
+    select window    ${wc[0]}
+
+优惠券--结束优惠券
+    click link    id=hnav-170    #营销模块
+    sleep    2
+    click link    id=stnav-598    #营销中心
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[1]    #优惠券管理
+    sleep    2
+    click element    xpath=//*[@id="OneTable"]/tbody/tr[2]/td[10]/div/p[3]/input    #结束优惠券
+    sleep    2
+    click element    id=SetFinished    #确认
+    sleep    2
+
+积分--注册送积分
+    [Documentation]    依赖（0）
+    ...    应用会员：@{会员帐号}[2]
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=注册送积分
+    sleep    1
+    click element    id=IsEnableRegPoint
+    sleep    2
+    input text    id=txtPoint    9
+    click element    id=startDate
+    sleep    2
+    click element    xpath=/html/body/div[2]/div[4]/table/tfoot/tr/th[2]
+    ${gettime}    get time
+    ${edtime}    add time to date    ${gettime}    5days
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day}
+    input text    id=endDate    ${endtime}
+    sleep    2
+    click button    id=btn-save
+    sleep    2
+    page should contain    9
+    #注册会员，验证是否赠送积分
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    1
+    ${memberG}    set variable    @{会员帐号}[2]
+    ${wc}    list windows
+    select window    ${wc[1]}
+    sleep    3
+    会员注册    ${memberG}
+    #查看会员是否有可用优惠券
+    sleep    2
+    click element    xpath=//*[@id="to-integral"]/p[2]    #积分
+    sleep    2
+    page should contain    注册送积分
+    page should contain    +9
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #点击导航菜单会员中心
+    sleep    2
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    close window
+    sleep    1
+    select window    ${wc[0]}
+    sleep    2
+    #关闭注册送积分
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=注册送积分
+    sleep    1
+    click element    id=IsEnableRegPoint
+    #删除注册送积分会员
+    sleep    2
+    click element    link=会员    #点击会员
+    sleep    1
+    click element    link=会员列表
+    sleep    1
+    input text    id=CellPhone    @{会员帐号}[2]
+    click element    id=btn_Search
+    sleep    2
+    click element    id=selectAll    #勾选会员
+    sleep    1
+    click element    id=btnDelMembers    #删除
+    sleep    2
+    click element    id=DelMembersAll    #是
+    sleep    1
+    Select From List By Index    id=Status    2    #选择已删除
+    click element    id=btn_Search    #搜索
+    sleep    1
+    click element    id=selectAll    #勾选
+    sleep    1
+    click element    id=ShowRealDel    #点击删除
+    sleep    2
+    click element    id=RelDelMembersAll    #是
+    sleep    1
+
+积分--购物送积分设置
+    [Documentation]    依赖(0)(2)(4.1)
+    ...    应用会员：@{会员帐号}[0]
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=购物送积分
+    sleep    1
+    click element    id=IfEnable
+    sleep    1
+    input text    id=txtScore    10
+    input text    id=txt_ShoppingScoreUnit    1    #每10元奖励1分
+    sleep    1
+    click element    id=chkOrderFull
+    sleep    1
+    input text    id=txtOrderValue    20
+    input text    id=txt_sign_RewardScore    5    #订单满20元奖励5分
+    sleep    2
+    click button    id=btn_signSave
+    sleep    2
+    #进行下单
+    click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
+    sleep    2
+    ${wc}    list windows
+    select window    ${wc[1]}
+    sleep    5
+    click link    id=btnAddToBuy    #立即购买
+    sleep    3
+    click element    id=btnBuyNow    #立即购买
+    sleep    2
+    会员登录    @{会员帐号}[0]
+    sleep    2
+    ${totalmoney}    get text    xpath=//*[@id="AllSumPrice"]    #合计
+    ${Cashbackpoint}    get text    xpath=//*[@id="setpoints"]    #完成后可返回多少积分
+    ${Calculatpoint}    evaluate    int(${totalmoney}/10+5)
+    sleep    2
+    click link    id=submit    #提交订单
+    sleep    2
+    click link    xpath=//*[@id="link-offlinepay"]    #线下付款
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    1
+    select window    ${wc[0]}
+    sleep    2
+    click link    link=订单    #点击订单模块
+    sleep    2
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #点击确认收款
+    sleep    2
+    click button    id=popbtn-cnfgoon    #确认收款
+    sleep    2
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
+    sleep    1
+    select from list by value    id=controlExpress    YD,韵达快递    #选择快递
+    input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
+    sleep    1
+    click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
+    sleep    3
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[7]    #确认收货
+    sleep    2
+    click button    id=popbtn-cnfgoon    #确定
+    sleep    2
+    #后台检查积分
+    click link    link=会员
+    sleep    2
+    click element    id=stnav-164    #会员积分查询
+    sleep    2
+    input text    id=CellPhone    @{会员帐号}[0]
+    sleep    1
+    click element    id=btnSearch    #查询积分用户
+    sleep    2
+    click element    xpath=//*[@id="ctl00_ContentPlaceHolder1_grdManager"]/tbody/tr/td[8]/p/a    #查询积分明细
+    sleep    2
+    ${后台获取积分}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/table/tbody/tr[1]/td[3]    #获取最新笔订单积分
+    log    ${后台获取积分}
+    should be equal as strings    ${Calculatpoint}    ${后台获取积分}
+    #前台检查积分
+    select window    ${wc[1]}
+    sleep    2
+    click element    xpath=//*[@id="to-integral"]/p[2]    #前台查看会员积分明细
+    sleep    2
+    ${前台获取积分}    get text    xpath=/html/body/div[1]/div[2]/div/div[1]/span
+    should contain    ${前台获取积分}    ${后台获取积分}
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #点击导航菜单会员中心
+    sleep    2
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    close window
+    select window    ${wc[0]}
+    sleep    2
+    #关闭购物送积分
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=购物送积分
+    sleep    1
+    click element    id=chkOrderFull
+    sleep    1
+    click element    id=IfEnable
+    sleep    1
+
+积分--积分抵现
+    [Documentation]    依赖(0)(2)(4.1)(15.1)
+    #检查会员是否有足够积分使用
+    click link    link=会员
+    sleep    2
+    click element    id=stnav-86    #进入会员列表
+    sleep    2
+    input text    id=CellPhone    @{会员帐号}[0]    #查询框内输入会员手机号
+    sleep    1
+    click element    id=btn_Search    #提交搜索
+    sleep    3
+    click element    xpath=//*[@id="ctl00_ContentPlaceHolder1_grdManager"]/tbody/tr/td[11]/div/p[4]
+    sleep    2
+    ${当前积分}    get text    id=NowPoints
+    run keyword if    ${当前积分}==0    会员增加积分
+    ...    ELSE    log    会员积分足够
+    sleep    2
+    #设置积分抵现
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=积分抵现
+    sleep    1
+    click element    xpath=//*[@id="offlineEnable"]/i
+    sleep    1
+    input text    id=txtRate    10    #10积分抵扣1元
+    input text    id=txtMaxAmount    200    #上限200
+    sleep    1
+    click element    id=btnSave
+    sleep    2
+    #进行下单验证积分抵现
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    1
+    ${wc}    list windows
+    select window    ${wc[1]}
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #点击导航菜单会员中心
+    sleep    2
+    会员登录    @{会员帐号}[0]
+    sleep    2
+    ${points}    get text    xpath=//*[@id="to-integral"]/p[1]    #获取当前会员剩余积分
+    ${转points}    convert to string    ${points}
+    ${预计可抵现金额}    evaluate    ${转points}/10    #预计可抵现金额
+    log    ${预计可抵现金额}
+    select window    ${wc[0]}
+    sleep    2
+    click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    input text    id=ProductName    ${全局关键字}多规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
+    sleep    2
+    ${wc}    list windows
+    select window    ${wc[2]}
+    sleep    1
+    click link    id=btnAddToBuy
+    sleep    2
+    click element    xpath=//*[@id="selectSkuBox"]/div/div/a    #选择规格1
+    sleep    1
+    click element    xpath=//*[@id="selectSkuBox"]/div[2]/div/a    #选择套餐1
+    sleep    1
+    click button    id=btnBuyNow
+    sleep    1
+    ${starttotalmoney}    get text    xpath=//*[@id="AllSumPrice"]    #未抵现的订单金额
+    sleep    3
+    click element    xpath=//*[@id="sw-point"]/div
+    sleep    1
+    ${endtotalmoney}    get text    xpath=//*[@id="AllSumPrice"]    #抵现后订单金额
+    ${maxPoints}    get text    xpath=//*[@id="maxPointsToAmount"]    #抵现金额
+    ${cashpoint}    evaluate    ${starttotalmoney}-${endtotalmoney}    #实际抵现金额
+    ${cashpoint}    convert to string    ${cashpoint}
+    should contain    ${maxPoints}    ${cashpoint}
+    ${转预计可抵现金额}    convert to string    ${预计可抵现金额}
+    should contain    ${maxPoints}    ${转预计可抵现金额}
+    sleep    1
+    click link    id=submit
+    sleep    2
+    click link    xpath=//*[@id="link-offlinepay"]
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a
+    sleep    1
+    click element    xpath=//*[@id="wait-handle"]/a[1]/div/p[2]
+    sleep    1
+    ${orderpoint}    get text    xpath=//*[@id="orderList"]/section[1]/div[3]/p/span
+    ${endtotalmoney}    convert to string    ${endtotalmoney}
+    should contain    ${orderpoint}    ${endtotalmoney}
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #点击导航菜单会员中心
+    sleep    2
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    close window
+    select window    ${wc[1]}
+    close window
+    select window    ${wc[0]}
+    sleep    2
+    #关闭积分抵现
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=积分抵现
+    sleep    1
+    click element    xpath=//*[@id="offlineEnable"]/i
+    sleep    1
+
+积分--新增积分兑换活动
+    [Documentation]    依赖（0）
+    ...
+    ...    10积分兑换
+    #检查会员是否有足够积分使用
+    click link    link=会员
+    sleep    2
+    click element    id=stnav-86    #进入会员列表
+    sleep    2
+    input text    id=CellPhone    @{会员帐号}[0]    #查询框内输入会员手机号
+    sleep    2
+    click element    id=btn_Search    #提交搜索
+    sleep    3
+    click element    xpath=//*[@id="ctl00_ContentPlaceHolder1_grdManager"]/tbody/tr/td[11]/div/p[4]
+    sleep    2
+    ${当前积分}    get text    id=NowPoints
+    run keyword if    ${当前积分}==0    会员增加积分
+    ...    ELSE    log    会员积分足够
+    sleep    2
+    #设置积分兑换活动
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    2
+    click link    link=积分兑换
+    sleep    2
+    click link    id=add-integralexchg
+    sleep    2
+    click element    id=idFile
+    sleep    2
+    win wait    打开
+    win activate    打开
+    sleep    2
+    control set text    \    \    Edit1    ${CURDIR}\\${商品路径}
+    sleep    2
+    control click    \    \    Button1
+    sleep    2
+    input text    id=txtName    PointZDH01
+    click element    id=selectAll
+    sleep    2
+    click element    id=BeginDate
+    sleep    2
+    click element    xpath=/html/body/div[2]/div[4]/table/tfoot/tr/th[2]
+    ${etime}    get time
+    ${edtime}    add time to date    ${etime}    10days
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day} ${datetime.hour}:${datetime.minute}:${datetime.second}
+    input text    id=EndDate    ${endtime}
+    sleep    2
+    click element    id=NextSave
+    sleep    2
+    input text    name=pname    ${全局关键字}单规格商品
+    click element    id=popbtn-query
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[4]/p
+    input text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[4]/input[1]    100
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[5]/p
+    input text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[5]/input    10
+    sleep    2
+    click button    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[7]/button[1]
+    sleep    2
+    click element    id=saveAllBtn
+    sleep    2
+    page should contain    PointZDH01
+    page should contain    100
+    page should contain    进行中
+
+积分--参与积分兑换活动
+    [Documentation]    依赖（0）（2）（4.1）（24.24）（15.1）
+    #进入店铺主页配置店铺活动模块
+    click link    id=hnav-1
+    sleep    2
+    click link    id=stnav-54
+    sleep    2
+    click element    id=btn_edit
+    sleep    2
+    click element    xpath=//html/body/div[2]/div/div[1]/div[2]/div/div/div/div/div[1]/div/ul/li[13]/div/i
+    sleep    2
+    click element    xpath=//*[@id="diy-ctrl"]/div/ul/li[1]/div[2]/div/div/a/i
+    sleep    1
+    click link    xpath=//*[@id="diy-ctrl"]/div/ul/li[1]/div[2]/div/div/ul/li[10]/a    #17
+    sleep    2
+    click link    id=j-savePage
+    sleep    2
+    #进入前端,店铺活动页面
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    ${wc}    list windows
+    select window    ${wc[1]}
+    sleep    2
+    Comment    click link    link=首页
+    Comment    sleep    1
+    Execute Javascript    window.scrollTo(0, document.body.scrollHeight)
+    sleep    2
+    click link    link=店铺活动
+    Comment    click link    xpath=//*[@id="divCommon"]/div[7]/section/ul/li/a
+    sleep    1
+    click element    id=activeName
+    sleep    1
+    click element    xpath=//*[@id="picture"]/ul/li[1]/a/div[2]
+    sleep    1
+    click element    xpath=//body/div/div[2]/div[1]/a/p[2]    #立即参加
+    会员登录    @{会员帐号}[0]
+    sleep    2
+    Click Image    xpath=//*[@id="ListId"]/li/div/a/div/img
+    sleep    1
+    click element    xpath=/html/body/nav/a[4]/p    #积分兑换
+    sleep    1
+    click button    xpath=//*[@id="sureToBuy"]/button
+    sleep    1
+    ${allsumprice}    get text    id=AllSumPrice
+    should be equal as strings    ${allsumprice}    0.00
+    ${pointtext}    get text    xpath=/html/body/div[2]/div[2]/p/span[1]
+    should contain    ${pointtext}    积分:10
+    sleep    1
+    click element    xpath=/html/body/div[2]/div[3]
+    sleep    2
+    click element    xpath=/html/body/div[10]/div[2]/span
+    sleep    1
+    ${ordertext}    get text    xpath=/html/body/div[1]/div[1]/p[2]
+    should contain    ${ordertext}    ￥0.00
+    sleep    1
+    click element    xpath=/html/body/div[1]/div[1]/div[3]/a[1]    #订单详情
+    sleep    1
+    ${Porderdetails}    get text    xpath=//*[@id="div-container"]/div[4]/div[2]/p[1]/span[2]
+    should contain    ${Porderdetails}    10积分
+    ${Morderdetails}    get text    xpath=//*[@id="div-container"]/div[4]/div[2]/p[4]/span[2]
+    should contain    ${Morderdetails}    ￥0.00
+    sleep    1
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    close window
+    select window    ${wc[0]}
+    #删除积分兑换活动
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=积分兑换
+    sleep    2
+    click element    id=selectAll    #全选
+    sleep    2
+    click element    id=batdel    #批量删除
+    sleep    2
+    click button    xpath=//*[@id="divbtn-cmf"]/button[1]    #确认删除
+
+满减--新增满减活动
+    [Documentation]    依赖（0）
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=满减活动
+    sleep    1
+    click element    id=add-activity
+    sleep    2
+    input text    id=ActName    FullreductionACT1a
+    sleep    1
+    click element    id=StartTime
+    sleep    1
+    click element    xpath=//html/body/div[2]/div[4]/table/tfoot/tr/th[2]
+    ${etime}    get time
+    ${edtime}    add time to date    ${etime}    10days
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day} ${datetime.hour}:${datetime.minute}:${datetime.second}
+    input text    id=EndTime    ${endtime}
+    sleep    1
+    Comment    click element    id=allmemberGrade
+    Comment    sleep    1
+    input text    name=MeetMoney    10
+    sleep    1
+    click element    xpath=//*[@id="popdiv-oly1"]/input[1]
+    sleep    1
+    input text    name=Redus    5    #满10减5
+    sleep    1
+    click button    id=saveBtn
+    sleep    4
+    Comment    input text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[1]/div[2]/div/input[1]    FullreductionACT1a
+    Comment    click element    name=query
+    Comment    sleep    1
+    page should contain    FullreductionACT1a    loglevel=满减名与预期值不符
+    page should contain    全部商品    loglevel=参与商品与预期值不符
+    page should contain    满额    loglevel=优惠方式与预期值不符
+    page should contain    进行中    loglevel=状态与预期值不符
+    sleep    2
+
+满减--参与满减活动
+    [Documentation]    依赖（0）（2）（4.1）（24.25配置了店铺活动模块）（24.31）
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    1
+    ${wc}    list windows
+    select window    ${wc[1]}
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    会员登录    @{会员帐号}[0]
+    sleep    2
+    ${number}    get text    xpath=//*[@id="sct-mark"]/div[2]/a/p[1]
+    select window    ${wc[0]}
+    sleep    2
+    click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
+    sleep    2
+    ${wc}    list windows
+    select window    ${wc[2]}
+    sleep    2
+    click link    id=btnAddToBuy
+    sleep    1
+    click button    id=btnBuyNow
+    sleep    1
+    ${Discount}    get text    xpath=//*[@id="Discount_0"]
+    should contain    ${Discount}    5.00    #检查满减金额
+    ${totalmoney}    get text    id=AllSumPrice
+    ${Total}    evaluate    ${Discount}+${totalmoney}
+    should be true    ${Total}<501
+    click link    id=submit    #提交订单
+    sleep    1
+    click link    id=link-offlinepay
+    sleep    1
+    click element    xpath=//*[@id="ul"]/li[4]/div/a
+    sleep    1
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    close window
+    select window    ${wc[1]}
+    close window
+    select window    ${wc[0]}
+    sleep    1
+    click link    id=hnav-10    #回到后台，检查订单
+    sleep    1
+    click link    id=stnav-76
+    sleep    1
+    input text    id=input-prodname    单规格
+    click element    id=btn-query
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[4]/a[1]    #查看详情
+    ${wc}    list windows
+    select window    ${wc[1]}
+    sleep    2
+    ${FullreductionName}    get text    xpath=//*[@id="tr-prodinfo"]/td[2]/div/div
+    should contain    ${FullreductionName}    满减FullreductionACT1a：￥5.00
+    sleep    1
+    close window
+    select window    ${wc[0]}
+    sleep    1
+    #结束/删除满减活动
+    click link    id=hnav-170
+    sleep    2
+    click link    id=stnav-598
+    sleep    1
+    click link    link=满减活动
+    sleep    1
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div/table/tbody/tr[2]/td[7]/p[2]/a
+    sleep    1
+    click element    xpath=//*[@id="popbtn-cnfgoon"]
+    sleep    2
+    page should contain    已结束    loglevel=状态与预期值不符
+    sleep    3
+    click element    id=selectAll    #全选
+    sleep    2
+    click element    id=batdel    #批量删除
+    sleep    2
+    click button    id=popbtn-cnfgoon    #确认删除
+    sleep    2

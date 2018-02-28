@@ -1,0 +1,14 @@
+*** Variables ***
+${点击会员}           xpath=.//*[@id='hnav-15']/div/i
+${点击会员列表}         xpath=.//*[@id='sider']/nav/ul/li[1]/a[text()='会员列表']
+${调整积分}           xpath=.//table[@id='ctl00_ContentPlaceHolder1_grdManager']/tbody/tr/td/div/p[4]
+${查看积分}           xpath=.//table[@id='ctl00_ContentPlaceHolder1_grdManager']/tbody/tr/td/div/p[4]
+${点击会员中心}         xpath=id('ul')/li[4]/div/a
+${点击可用积分}         xpath=//*[@id="to-integral"]/p[2]
+${获取会员当前积分}       xpath=/html/body/div[1]/div[2]/div/div[1]/span
+${调整余额}           xpath=.//table[@id='ctl00_ContentPlaceHolder1_grdManager']/tbody/tr/td/div/p[5]
+${查看余额}           xpath=.//table[@id='ctl00_ContentPlaceHolder1_grdManager']/tbody/tr/td/div/p[5]
+${关闭}             xpath=id('SetUserAmount')/div/div/div[3]/button
+${点击进入余额}         xpath=//*[@id="sct-mark"]/div[2]/a/p[2]
+${获取前台当前余额}       xpath=/html/body/div[1]/div[1]/div/p[2]/span
+${点击商品跳转前台}       xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a

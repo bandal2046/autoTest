@@ -1,0 +1,7 @@
+*** Variables ***
+${访问店铺}           xpath=//div[@id='allcontent']/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+${在电脑查看}          xpath=//div[@id='allcontent']/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+${点击立即购买}         xpath=//*[@id="btnAddToBuy"]/p    # 前台商品详情立即购买
+${确认购买}           id=btnBuyNow    # 前台商品详情确认购买
+${添加地址}           id=address    # 前台订单提交页添加地址
+${点击添加}           xpath=/html/body/div[1]/div[3]/div/a    # 前台添加地址，确认添加

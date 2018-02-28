@@ -1,0 +1,266 @@
+*** Settings ***
+Library           DateTime
+Library           Selenium2Library
+Library           AutoItLibrary
+Library           Screenshot
+Resource          资源库/Variables.txt
+Resource          资源库/keyword.txt
+Resource          资源库/会员UI.txt
+Resource          资源库/PublicUI.txt
+
+*** Test Cases ***
+会员积分
+    [Documentation]    Author：蒋达为
+    ...    依赖脚本：注册店铺会员
+    click element    ${点击会员}    #点击会员
+    click element    ${点击会员列表}    #点击会员列表
+    sleep    2
+    click element    ${调整积分}    #调整积分
+    sleep    1
+    input text    id=txtSetPoints    200    #输入积分值，误改后续用在24.23积分抵现
+    input text    id=txtSetRemark    调整积分    #输入备注
+    click button    id=btnSetPoints    #确认修改
+    sleep    4
+    click element    ${查看积分}    #查看积分
+    sleep    2
+    ${low_integral}    get text    id=NowPoints    #获取后台当前积分
+    click button    id=btnCloseSetPoints    #关闭弹出层
+    click element    link=首页    #首页
+    sleep    1
+    click element    ${访问店铺}    #访问店铺
+    click element    ${在电脑查看}    #在电脑查看
+    sleep    1
+    ${titles}    Get Window Titles    #获取当前浏览器所有标题
+    select window    ${titles[1]}    #切换至句柄1
+    sleep    1
+    click element    ${点击会员中心}    #点击会员中心
+    sleep    2
+    会员登录    @{会员帐号}[0]
+    sleep    1
+    click element    ${点击可用积分}    #点击可用积分
+    sleep    1
+    ${integral}    get text    ${获取会员当前积分}    #获取会员当前积分
+    should contain    ${low_integral}    ${integral}    msg=后台与前台会员积分不匹配，积分修改失败!
+    click element    ${点击会员中心}    #点击会员中心
+    会员退出切回后台    ${titles}
+
+会员余额
+    [Documentation]    Author：蒋达为
+    ...    依赖脚本：注册店铺会员
+    click element    ${点击会员}    #点击会员
+    click element    ${点击会员列表}    #点击会员列表
+    sleep    3
+    click element    ${调整余额}    #调整余额
+    sleep    1
+    input text    id=txtAmount    5    #输入余额值
+    input text    id=txtSetAmountBark    添加余额    #备注信息
+    click button    id=btnUpdateAmount    #确认修改
+    sleep    4
+    click element    ${查看余额}    #查看余额
+    sleep    2
+    ${a}    get text    id=lbNowAmount    #获取后台当前余额
+    ${low_balance}    Should Match Regexp    ${a}    \\d+    #正则去除￥
+    click element    ${关闭}    #关闭
+    click element    link=首页    #首页
+    sleep    1
+    click element    ${访问店铺}    #访问店铺
+    click element    ${在电脑查看}    #在电脑查看
+    sleep    1
+    ${titles}    获取标题切换
+    click element    ${点击会员中心}    #点击会员中心
+    sleep    2
+    会员登录    @{会员帐号}[0]
+    sleep    1
+    click element    ${点击进入余额}    #点击进入余额
+    sleep    1
+    ${b}    get text    ${获取前台当前余额}    #获取前台当前余额
+    should contain    ${low_balance}    ${b}    msg=后台与前台会员余额不匹配，余额修改失败!
+    click element    ${点击会员中心}    #点击会员中心
+    会员退出切回后台    ${titles}
+
+新增会员等级
+    [Documentation]    Author：蒋达为
+    click element    link=会员    #点击会员
+    click element    link=会员等级
+    sleep    1
+    click element    id=addGrade    #添加会员等级
+    sleep    1
+    input text    id=txtGradeName    Autoclass    #会员等级
+    input text    id=txtDiscount    50
+    input text    id=txtTradeVol    750    #交易额
+    input text    id=txtTradeTimes    5    #交易次数
+    click element    id=btnSave    #确认
+    sleep    1
+    page should contain    Autoclass    msg=当前页面不存在等级为Autoclass的名称
+    page should contain    5    msg=当前页面不存在交易次数5次的
+    page should contain    50%    msg=当前页面不存在会员折扣50%
+
+会员等级升级
+    进入前台页面
+    ${memberG}    set variable    @{会员帐号}[2]
+    会员注册    ${memberG}
+    close window
+    ${titles}    list windows    #获取当前浏览器所有标题
+    select window    ${titles[0]}    #切换至句柄1
+    click element    link=商品    #点击商品
+    input text    id=ProductName    ${全局关键字}单规格商品
+    click element    id=btnSearch    #查询
+    sleep    1
+    click element    ${点击商品跳转前台}    #点击商品跳转前台
+    sleep    1
+    ${titles}    list windows    #获取当前浏览器所有标题
+    select window    ${titles[1]}    #切换至句柄1
+    click element    ${点击立即购买}    #点击立即购买
+    sleep    1
+    input text    id=txtNumber    6
+    click button    ${确认购买}    #确定购买
+    sleep    3
+    click element    ${添加地址}    #添加地址
+    sleep    1
+    click element    ${点击添加}    #点击添加
+    sleep    2
+    input text    id=ShipTo    @{会员帐号}[2]
+    input text    id=CellPhone    @{会员帐号}[2]
+    input text    id=address    我是详细地址。我是详细地址。我是详细地址
+    sleep    1
+    click element    id=showCityPicker4    #点击选择收货地址
+    sleep    1
+    click element    id=100    #选择浙江省
+    sleep    1
+    click element    id=101    #选择杭州市
+    sleep    1
+    click element    id=102    #选择上城区
+    sleep    1
+    click element    id=10201    #选择清波街道
+    sleep    2
+    click button    id=SaveAddress    #保存地址
+    sleep    5
+    click element    id=submit    #点击提交订单
+    sleep    2
+    click element    id=link-offlinepay    #选择线下支付
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div    #返回会员中心
+    sleep    2
+    click element    xpath=//*[@id="wait-handle"]/a[1]/div/p[2]    #待付款
+    sleep    1
+    ${order}    Get Element Attribute    xpath=//div[1]/div/section[1]/div[1]/div/label/input@value
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
+    sleep    2
+    会员退出且切换到后台
+    click element    id=hnav-10    #点击订单
+    input text    id=input-ordernum    ${order}    #根据订单号查询
+    click element    id=btn-query    #点击查询
+    sleep    1
+    click element    xpath=//div[2]/div/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #确认付款
+    sleep    1
+    click element    id=popbtn-cnfgoon    #确认
+    sleep    3
+    click element    xpath=//div/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
+    sleep    1
+    select from list by value    id=controlExpress    YD,韵达快递    #选择快递
+    input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
+    sleep    1
+    click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
+    sleep    1
+    click element    //tbody/tr/td[4]/input[7]    #确认收货
+    sleep    1
+    click button    id=popbtn-cnfgoon    #确认收货提示
+    sleep    1
+    click element    link=会员    #点击会员
+    sleep    1
+    click element    link=会员列表
+    sleep    1
+    input text    id=CellPhone    @{会员帐号}[2]
+    click element    id=btn_Search
+    ${text}    get text    xpath=//div/table/tbody/tr/td[7]
+    should contain    ${text}    Autoclass    msg=等级名称不一致！
+    click element    id=selectAll    #勾选会员
+    sleep    1
+    click element    id=btnDelMembers    #删除
+    sleep    2
+    click element    id=DelMembersAll    #是
+    sleep    1
+    Select From List By Index    id=Status    2    #选择已删除
+    click element    id=btn_Search    #搜索
+    sleep    1
+    click element    id=selectAll    #勾选
+    sleep    1
+    click element    id=ShowRealDel    #点击删除
+    sleep    2
+    click element    id=RelDelMembersAll    #是
+    sleep    1
+
+会员等级折扣
+    [Documentation]    Author：蒋达为 依赖脚本：4.1新建商品（单规格）
+    进入前台页面
+    ${memberG}    set variable    @{会员帐号}[3]
+    会员注册    ${memberG}
+    会员退出且切换到后台
+    click element    link=商品    #点击商品
+    input text    id=ProductName    ${全局关键字}单规格商品
+    click element    id=btnSearch    #查询
+    sleep    1
+    ${url}    Get Element Attribute    xpath=//table[@id='list']/tbody/tr[1]/td[3]/div/div/div[2]/p[1]/a@href    #获取商品详情地址
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击商品跳转前台
+    sleep    1
+    ${titles}    list windows    #获取当前浏览器所有标题
+    select window    ${titles[1]}    #切换至句柄1
+    sleep    2
+    click element    id=btnAddToBuy    #立即购买
+    sleep    1
+    click element    id=btnBuyNow    #确认
+    会员登录    @{会员帐号}[3]
+    sleep    1
+    ${AgoSum}    get text    id=SumPrice_all    #获取订单总额
+    select window    ${titles[0]}    #切换至句柄0
+    click element    link=会员    #点击会员
+    click element    link=会员列表
+    sleep    1
+    input text    id=CellPhone    @{会员帐号}[3]
+    click element    id=btn_Search    #搜索
+    sleep    1
+    click element    xpath=//table/tbody/tr[1]/td[1]/input    #勾选会员
+    click element    id=btnShowGrade    #设置等级
+    sleep    1
+    Select From List By Index    id=rankList1    2    #选择第三行等级
+    click element    id=btnChangeGradeAll
+    sleep    2
+    ${name}    get text    xpath=//table/tbody/tr[1]/td[7]    #获取等级名称
+    should contain    ${name}    Autoclass    msg=等级名称不一致！
+    select window    ${titles[1]}    #切换至句柄1
+    Reload Page
+    sleep    2
+    ${LateSum}    get text    id=SumPrice_all    #获取订单总额
+    ${sum}    Evaluate    ${AgoSum}*0.5    #会员折扣50%
+    Should Be Equal As Numbers    ${sum}    ${LateSum}    msg=更改等级后，会员金额不一致
+    close window
+    select window    ${titles[0]}    #后台
+    click element    link=首页    #点击首页
+    sleep    1
+
+删除会员和等级
+    click element    link=会员    #点击会员
+    sleep    1
+    click element    link=会员列表
+    sleep    1
+    input text    id=CellPhone    @{会员帐号}[2]
+    click element    id=btn_Search    #搜索
+    sleep    2
+    ${a}    Run Keyword And Return Status    Page Should Contain    @{会员帐号}[2]
+    run keyword if    ${a} !=${TRUE}    log    会员不存在，不需要删除
+    ...    ELSE    删除会员
+    sleep    2
+    click element    link=会员列表
+    sleep    1
+    input text    id=CellPhone    @{会员帐号}[3]
+    click element    id=btn_Search    #搜索
+    sleep    2
+    ${b}    Run Keyword And Return Status    Page Should Contain    @{会员帐号}[3]
+    run keyword if    ${b} !=${TRUE}    log    会员不存在，不需要删除
+    ...    ELSE    删除会员
+    sleep    2
+    click element    link=会员等级
+    sleep    1
+    ${c}    Run Keyword And Return Status    Page Should Contain    Autoclass
+    run keyword if    ${c} !=${TRUE}    log    等级不存在，不需要删除
+    ...    ELSE    click element    xpath=//table/tbody/tr[2]/td[6]/div/a    #删除

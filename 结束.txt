@@ -1,0 +1,10 @@
+*** Settings ***
+Library           DateTime
+Library           Selenium2Library
+Library           Screenshot
+Library           AutoItLibrary
+
+*** Test Cases ***
+0关闭浏览器结束测试
+    sleep    2
+    close window

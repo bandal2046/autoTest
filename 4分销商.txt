@@ -1,0 +1,783 @@
+*** Settings ***
+Library           Selenium2Library
+Library           Screenshot
+Resource          资源库/Variables.txt
+Resource          资源库/keyword.txt
+Library           AutoItLibrary
+Library           DateTime
+
+*** Test Cases ***
+会员调整为分销商
+    进入前台页面
+    ${memberG}    set variable    @{分销商帐号}[3]
+    会员注册    ${memberG}
+    click element    xpath=//*[@id="to-shipaddr"]/p    #点击收货地址
+    sleep    2
+    click element    xpath=//*[@id="div-addradd"]/a    #点击新增收货地址
+    sleep    2
+    input text    id=ShipTo    @{分销商帐号}[3]    #填入收货人
+    input text    id=CellPhone    @{分销商帐号}[3]    #填入电话号码
+    input text    id=address    我是详细地址。我是详细地址。我是详细地址    #填入详细地址
+    sleep    1
+    click element    id=showCityPicker4    #点击选择收货地址
+    sleep    1
+    click element    id=100    #选择浙江省
+    sleep    1
+    click element    id=101    #选择杭州市
+    sleep    1
+    click element    id=102    #选择上城区
+    sleep    1
+    click element    id=10201    #选择清波街道
+    sleep    2
+    click button    id=SaveAddress    #保存地址
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    会员退出且切换到后台
+    sleep    2
+    click link    link=会员
+    sleep    2
+    click element    id=stnav-86    #进入会员列表
+    sleep    2
+    input text    id=CellPhone    @{分销商帐号}[3]    #查询框内输入会员手机号
+    sleep    1
+    click element    id=btn_Search    #提交搜索
+    sleep    2
+    click element    xpath=//table[@class='table table-hover mb0']/tbody/tr/td/input    #选中需要调整的会员
+    sleep    1
+    click button    id=btnShowDistributor    #设置为分销商
+    sleep    2
+    click button    id=btnSetDistributor    #确认
+    sleep    3
+    click link    link=会员
+    click link    link=分销商    #切换到分销商页
+    sleep    1
+    click element    id=stnav-187    #进入分销商列表
+    sleep    2
+    ${电话号码}    get text    xpath=//*[@id="UserName-divrid0"]/p[2]/span    #获取分销商列表第一行数据电话号码
+    ${后台店铺名}    get text    id=RealName-divrid0    #获取分销商列表第一行数据店铺名称
+    log    ${电话号码}
+    should contain    ${电话号码}    @{分销商帐号}[3]    #验证分销商列表找到调整后的数据
+    log    调整分销商后台分销商列表数据正确
+    click link    link=首页
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]    #访问首页
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]    #打开首页
+    sleep    1
+    切换到前台
+    sleep    1
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    2
+    会员登录    @{分销商帐号}[3]
+    sleep    2
+    click element    xpath=/html/body/div[1]/div[1]/div[1]/div[2]/a    #切换到分销中心
+    ${前台店铺名}    get text    xpath=/html/body/div[1]/header/section[1]/div[2]/p[1]    #获取分销中心店铺名称
+    log    ${前台店铺名}
+    log    ${后台店铺名}
+    should contain    ${前台店铺名}    ${后台店铺名}    #验证前后台店铺名称一致
+    log    验证前后台店铺名称一致
+    sleep    2
+    log    会员调整为分销商测试通过
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    2
+    会员退出且切换到后台
+    sleep    1
+    click link    link=首页    #进入首页模块
+    sleep    1
+
+新建店铺分类-管理商品-检查佣金比
+    #新建店铺分类
+    click link    link=商品
+    sleep    1
+    click element    id=stnav-70
+    sleep    2
+    click element    id=btn-addshpcat
+    sleep    2
+    input text    id=Name    ${全局关键字}店铺分类
+    clear element text    id=SecondCommission
+    input text    id=SecondCommission    2    #上一级佣金比例
+    clear element text    id=FirstCommission
+    input text    id=FirstCommission    3    #成交店铺佣金比例
+    sleep    2
+    click button    id=Save
+    sleep    2
+    click element    id=stnav-70
+    sleep    2
+    page should contain    ${全局关键字}店铺分类
+    log    新建店铺分类成功
+    #管理商品分类
+    sleep    1
+    click element    id=stnav-569
+    sleep    3
+    click element    id=chkbox-allslt
+    sleep    1
+    click button    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div[1]/div[2]/div[1]/div/div[2]/div[1]/div/button
+    sleep    2
+    page should contain    ${全局关键字}店铺分类
+    log    新建店铺分类在商品归类页存在
+    click button    xpath=//*[@id="setClass"]/div/div/div[3]/button[2]
+    sleep    2
+    page should contain    ${全局关键字}店铺分类
+    log    批量设置店铺分类成功
+    #检查佣金比
+    sleep    5
+    click element    id=stnav-63
+    sleep    2
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[10]/div/p/a    #编辑商品
+    sleep    2
+    切换到前台
+    click element    id=switcher-off    #设置商品使用店铺分类佣金
+    sleep    2
+    ${a}    get element attribute    id=SecondCommission@value    #获取上一级佣金比例值
+    log    ${a}
+    ${b}    get element attribute    id=FirstCommission@value    #获取成交店铺佣金比例
+    log    ${b}
+    should contain    ${a}    2
+    should contain    ${b}    3
+    log    商品佣金计算方式成功设置为店铺分类佣金比
+    close window
+    切换到后台
+    log    新建店铺分类-管理商品-检查佣金比测试通过
+    sleep    1
+    click link    link=商品    #进入首页模块
+    sleep    2
+    click element    id=stnav-70
+    sleep    2
+    ${fl}    Get Matching Xpath Count    xpath=//*[@id="dataList"]/tr
+    click element    //*[@id="dataList"]/tr[${fl}]/td[4]/span[3]/a
+    sleep    2
+    click element    id=popbtn-cnfgoon
+    sleep    2
+    click link    link=首页
+
+分销商订单-分销商让利
+    #修改商品佣金比
+    click link    link=商品
+    sleep    2
+    click element    id=stnav-63
+    sleep    2
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[10]/div/p/a    #编辑商品
+    sleep    2
+    切换到前台    #切换到编辑商品页
+    sleep    2
+    clear element text    id=SecondCommission
+    input text    id=SecondCommission    5    #上一级佣金比例值5
+    clear element text    id=FirstCommission
+    input text    id=FirstCommission    10    #成交店铺佣金比例10
+    sleep    1
+    click button    id=Save    #保存
+    sleep    2
+    close window
+    切换到后台
+    #获取分销商信息
+    click link    link=分销商
+    sleep    1
+    click element    id=stnav-187
+    sleep    2
+    ${FXueser}    get text    xpath=//*[@id="UserName-divrid0"]/p[2]/span    #获取分销商帐号
+    ${订单前总佣金}    get text    id=ReferralBlance-divrid0
+    log    ${订单前总佣金}
+    click element    id=stnav-169
+    sleep    2
+    ${分销商消费是否参与分佣}    get text    id=IsDistribution
+    log    ${分销商消费是否参与分佣}
+    run keyword if    '${分销商消费是否参与分佣}'=='已关闭'    click element    id=IsDistribution
+    ...    ELSE    click element    id=stnav-169
+    sleep    2
+    ${开启订单价格修改}    get text    id=EnableChangePrice
+    log    ${开启订单价格修改}
+    run keyword if    '${开启订单价格修改}'=='已关闭'    click element    id=EnableChangePrice
+    ...    ELSE    click link    link=分销商
+    sleep    2
+    #分销订单流程
+    click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    click element    id=sells    #全选商品
+    sleep    1
+    click button    id=btn-nopostage    #设置包邮
+    sleep    5
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
+    sleep    2
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[1]}    #跳转到商品详情页
+    sleep    1
+    click element    xpath=//*[@id="btnAddToBuy"]/p    #点击立即购买
+    sleep    2
+    click button    id=btnBuyNow    #确定购买
+    sleep    2
+    input text    id=txtUserName    ${FXueser}
+    input text    id=txtPassword    123456
+    click button    id=btnUserLogin
+    sleep    10
+    click element    id=submit    #点击提交订单
+    sleep    2
+    click element    id=link-offlinepay    #选择线下支付
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
+    sleep    2
+    切换到后台
+    click link    link=订单
+    sleep    1
+    click element    id=stnav-76
+    sleep    3
+    click element    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[4]/a    #查看订单详情
+    sleep    2
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[2]}    #切换到订单详情
+    ${获取订单分佣}    get text    xpath=//*[@id="div-commissioninfo"]/div/div/p/i
+    ${获取订单分佣去符号}    Should Match Regexp    ${获取订单分佣}    \\d+    #正则去除￥
+    log    ${获取订单分佣去符号}
+    ${获取订单金额}    get text    id=showitemprice
+    ${获取订单金额去符号}    Should Match Regexp    ${获取订单金额}    \\d+    #正则去除￥
+    log    ${获取订单金额去符号}
+    should be equal as integers    ${${获取订单金额去符号}*0.1}    ${获取订单分佣去符号}
+    log    订单详情内佣金计算正确
+    close window
+    sleep    2
+    切换到前台
+    click element    xpath=/html/body/div[1]/div[1]/div[1]/div[2]/a    #分销商中心
+    sleep    2
+    click element    xpath=/html/body/div[1]/div[3]/a[1]/div/p[2]    #本店订单
+    sleep    2
+    click button    xpath=//*[@id="xkd_1"]/div[2]/ul/li[2]/button    #点击改价
+    sleep    2
+    clear element text    xpath=/html/body/div[5]/div[1]/div[3]/input
+    input text    xpath=/html/body/div[5]/div[1]/div[3]/input    3    #分销商优惠3元
+    click element    xpath=/html/body/div[5]/div[2]/span[2]
+    sleep    2
+    confirm action
+    切换到后台
+    click link    link=订单
+    sleep    1
+    click element    id=stnav-76
+    sleep    3
+    click element    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[4]/a    #查看订单详情
+    sleep    2
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[2]}    #切换到订单详情
+    ${获取修改后订单分佣}    get text    xpath=//*[@id="div-commissioninfo"]/div/div/p/i
+    ${获取修改后订单分佣去符号}    Should Match Regexp    ${获取修改后订单分佣}    \\d+    #正则去除￥
+    log    ${获取修改后订单分佣去符号}
+    ${获取修改后订单金额}    get text    id=showitemprice
+    ${获取修改后订单金额去符号}    Should Match Regexp    ${获取修改后订单金额}    \\d+    #正则去除￥
+    log    ${获取修改后订单金额去符号}
+    should be equal as integers    ${${获取订单金额去符号}-3}    ${获取修改后订单金额去符号}
+    should be equal as integers    ${${获取订单分佣去符号}-3}    ${获取修改后订单分佣去符号}
+    log    调整后的订单金额和佣金计算正确
+    close window
+    sleep    2
+    切换到后台
+    click link    link=订单
+    sleep    1
+    click element    id=stnav-76
+    sleep    3
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #点击确认收款
+    sleep    2
+    click button    id=popbtn-cnfgoon    #确认收款
+    sleep    2
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
+    sleep    1
+    select from list by value    id=controlExpress    YD,韵达快递    #选择快递
+    input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
+    sleep    1
+    click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
+    sleep    2
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[7]    #确定收货
+    sleep    1
+    click button    id=popbtn-cnfgoon
+    sleep    1
+    #检查分销商佣金
+    click link    link=分销商
+    sleep    1
+    click element    id=stnav-187    #分销商列表
+    sleep    3
+    ${订单后总佣金}    get text    id=ReferralBlance-divrid0
+    log    ${订单后总佣金}
+    should be equal as integers    ${${订单后总佣金}-2}    ${订单前总佣金}
+    log    分销商列表内总佣金计算正确
+    sleep    2
+    切换到前台
+    click element    xpath=//*[@id="ul"]/li[4]/div/a
+    sleep    1
+    click element    xpath=/html/body/div[1]/div[1]/div[1]/div[2]/a    #分销商中心
+    sleep    2
+    click element    xpath=/html/body/div[1]/div[5]/ul/li[4]/a/p    #我的佣金
+    sleep    2
+    ${分销商中心可提现金额}    get text    xpath=/html/body/div[1]/div[1]/ul/li[1]/div
+    ${分销商中心可提现金额去符号}    Should Match Regexp    ${分销商中心可提现金额}    \\d+    #正则去除￥
+    should contain    ${分销商中心可提现金额去符号}    ${订单后总佣金}
+    log    分销商中心佣金总额正确
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    会员退出且切换到后台
+    click link    link=订单    #点击订单模块
+    log    分销商订单-分销商让利测试通过
+
+分销商上级调整
+    #注册会员
+    click link    link=首页    #点击首页
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    2
+    ${memberG}    set variable    @{分销商帐号}[0]
+    切换到前台
+    会员注册    ${memberG}
+    sleep    1
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    ${memberG}    set variable    @{分销商帐号}[1]
+    会员注册    ${memberG}
+    会员退出且切换到后台
+    sleep    2
+    #注册后的会员调整为分销商
+    click link    link=会员    #点击会员
+    sleep    1
+    click element    id=stnav-86    #会员列表
+    sleep    2
+    input text    id=CellPhone    @{分销商帐号}[0]    #查询框内输入会员手机号
+    sleep    1
+    click element    id=btn_Search    #提交搜索
+    sleep    2
+    click element    xpath=//table[@class='table table-hover mb0']/tbody/tr/td/input    #选中需要调整的会员
+    sleep    1
+    click button    id=btnShowDistributor    #设置为分销商
+    sleep    2
+    click button    id=btnSetDistributor    #确认
+    sleep    3
+    input text    id=CellPhone    @{分销商帐号}[1]    #查询框内输入会员手机号
+    sleep    1
+    click element    id=btn_Search    #提交搜索
+    sleep    2
+    click element    xpath=//table[@class='table table-hover mb0']/tbody/tr/td/input    #选中需要调整的会员
+    sleep    1
+    click button    id=btnShowDistributor    #设置为分销商
+    sleep    2
+    click button    id=btnSetDistributor    #确认
+    sleep    3
+    click link    link=会员
+    click link    link=分销商    #切换到分销商页
+    sleep    1
+    click element    id=stnav-187    #进入分销商列表
+    sleep    2
+    page should contain    @{分销商帐号}[0]
+    page should contain    @{分销商帐号}[1]
+    input text    id=UserName    @{分销商帐号}[1]
+    sleep    1
+    click button    id=btn-query
+    sleep    2
+    ${分销商1店铺名称}    get text    xpath=//*[@id="Datalist"]/tbody/tr/td[7]/div
+    sleep    2
+    input text    id=UserName    @{分销商帐号}[0]
+    sleep    1
+    click button    id=btn-query
+    sleep    2
+    click element    xpath=//*[@id="Datalist"]/tbody/tr/td[13]/div/a[6]    #点击调整分销商上级
+    sleep    2
+    select frame    id=divmyIframeModalIframe
+    input text    id=txtKey    @{分销商帐号}[1]
+    sleep    1
+    click button    xpath=/html/body/div/div/div[2]/div/input[2]
+    sleep    1
+    click element    xpath=//*[@id="Datalist"]/tbody/tr/td[5]/div/input    #将分销商0的上级调整为分销商1
+    sleep    1
+    click element    xpath=//*[@id="divconfirmtips"]/div/div/div[3]/button[1]
+    sleep    3
+    ${调整后上级}    get text    xpath=/html/body/div/div/div[1]/span[2]
+    log    ${调整后上级}
+    log    ${分销商1店铺名称}
+    should contain    ${调整后上级}    ${分销商1店铺名称}
+    Unselect Frame
+    click element    xpath=//*[@id="divmyIframeModal"]/div/div/div[1]/button    #关闭调整框
+    sleep    2
+    input text    id=TopStore    ${分销商1店铺名称}
+    sleep    2
+    page should contain    @{分销商帐号}[0]
+    log    分销商调整上级，后台操作成功，检查成功
+    #上级分销商前台验证结果
+    click link    link=首页    #点击首页
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    2
+    切换到前台
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    1
+    input text    id=txtUserName    @{分销商帐号}[1]
+    input text    id=txtPassword    123456
+    click button    id=btnUserLogin
+    sleep    2
+    click element    xpath=/html/body/div[1]/div[1]/div[1]/div[2]/a    #分销商中心
+    sleep    1
+    click element    xpath=/html/body/div[1]/div[4]/ul/li/div[2]/a[2]/div/p[1]    #下一级分店
+    sleep    2
+    page should contain    @{分销商帐号}[0]
+    log    上级分销商下级分店数据校验成功
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    1
+    会员退出且切换到后台
+    log    分销商上级调整测试通过
+    click link    link=首页    #点击首页
+
+分销商佣金调整
+    click link    link=分销商
+    sleep    2
+    click element    id=stnav-187    #分销商列表
+    sleep    2
+    ${分销商}    get text    xpath=//*[@id="Datalist"]/tbody/tr/td[5]/div/p[2]/span    #获取分销商账号
+    log    ${分销商}
+    ${调整前}    get text    xpath=//*[@id="Datalist"]/tbody/tr/td[10]/div    #获取分销商调整前佣金
+    log    ${调整前}
+    click element    xpath=//*[@id="Datalist"]/tbody/tr/td[13]/div/a[5]    #调整分拥
+    sleep    2
+    input text    id=txtCommission    10
+    sleep    1
+    input text    id=txtSetCommissionBark    增加10元佣金
+    sleep    3
+    click element    xpath=//*[@id="divAdjustmentCommission"]/div/div/div[3]/input
+    sleep    2
+    input text    id=UserName    ${分销商}
+    sleep    1
+    click button    id=btn-query
+    sleep    2
+    ${调整后}    get text    xpath=//*[@id="Datalist"]/tbody/tr/td[10]/div    #获取分销商调整后佣金
+    log    ${调整前}
+    log    ${调整后}
+    should be equal as integers    ${${调整前}+10}    ${调整后}
+    log    后台调整佣金计算正确
+    进入前台页面
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div
+    sleep    2
+    ${memberG}    set variable    ${分销商}
+    会员登录    ${memberG}
+    sleep    2
+    click element    xpath=/html/body/div[1]/div[1]/div[1]/div[2]/a    #分销商中心
+    sleep    2
+    click element    xpath=/html/body/div[1]/div[5]/ul/li[4]/a/p    #我的佣金
+    sleep    2
+    page should contain    ${调整后}
+    log    佣金调整后分销商中心显示正确
+    click element    xpath=//*[@id="ul"]/li[4]/div
+    会员退出且切换到后台
+    sleep    1
+    click link    link=首页
+    log    分销商佣金调整测试通过
+
+新建分销商等级
+    click link    link=分销商
+    sleep    2
+    click element    id=stnav-186    #分销商等级
+    sleep    2
+    click element    id=addDstGrade    #新建分销商等级
+    sleep    2
+    input text    id=Name    测试分销等级    #输入分销等级名称
+    sleep    1
+    input text    id=CommissionsLimit    5000000    #满足佣金总额
+    sleep    1
+    input text    id=FinishedOrderMoney    999998    #满足销售业绩
+    sleep    1
+    input text    id=FinishedOrderTimes    999998    #满足完成订单数
+    sleep    1
+    input text    id=FinishExpenditure    5000000    #商城消费金额
+    sleep    1
+    input text    id=FirstCommissionRise    20    #成交店铺佣金奖励
+    sleep    1
+    input text    id=SecondCommissionRise    10    #上一级佣金奖励
+    sleep    2
+    click element    id=btn-yes    #保存
+    sleep    2
+    page should contain    测试分销等级
+    ${满足佣金总额}    get text    xpath = //table[@class='table table-hover table-bordered']/tbody/tr[2]/td[3]/p
+    should contain    ${满足佣金总额}    5000000
+    ${满足销售业绩}    get text    xpath = //table[@class='table table-hover table-bordered']/tbody/tr[2]/td[3]/p[2]
+    should contain    ${满足销售业绩}    999998
+    ${满足完成订单数}    get text    xpath = //table[@class='table table-hover table-bordered']/tbody/tr[2]/td[3]/p[3]
+    should contain    ${满足完成订单数}    999998
+    ${商城消费金额}    get text    xpath = //table[@class='table table-hover table-bordered']/tbody/tr[2]/td[3]/p[4]
+    should contain    ${商城消费金额}    5000000
+    ${成交店铺佣金奖励}    get text    xpath = //table[@class='table table-hover table-bordered']/tbody/tr[2]/td[4]
+    should contain    ${成交店铺佣金奖励}    20
+    ${上一级佣金奖励}    get text    xpath = //table[@class='table table-hover table-bordered']/tbody/tr[2]/td[5]
+    should contain    ${上一级佣金奖励}    10
+    log    新建分销商等级测试成功
+    sleep    2
+    click link    link=首页
+
+分销商等级调整
+    [Documentation]    需要有分销商、分销商等级
+    click link    link=分销商
+    sleep    2
+    click element    id=stnav-187    #分销商列表
+    sleep    2
+    input text    id=UserName    @{分销商帐号}[3]
+    sleep    1
+    click button    id=btn-query    #分销商列表查询分销商
+    sleep    2
+    click element    id=CheckAll
+    sleep    1
+    click element    id=batsetgrade    #调整分销商等级
+    sleep    2
+    click element    id=GradeCheckList
+    sleep    1
+    ${value}    Get Matching Xpath Count    xpath=//*[@id="GradeCheckList"]/option
+    log    ${value}
+    click element    xpath=//*[@id="GradeCheckList"]/option[${value}]
+    sleep    2
+    click element    id=GradeCheck    #确认修改
+    sleep    2
+    click element    id=popbtn-cnfgoon    #确认修改
+    sleep    2
+    click element    id=GradeId    #分销商等级筛选
+    ${value2}    Get Matching Xpath Count    xpath=//*[@id="GradeId"]/option
+    log    ${value2}
+    click element    xpath=//*[@id="GradeId"]/option[${value2}]    #选择调整后的分销商等级
+    sleep    1
+    click button    id=btn-query    #分销商列表查询分销商
+    sleep    2
+    page should contain    @{分销商帐号}[3]
+    ${等级}    get text    //*[@id="Datalist"]/tbody/tr/td[8]/div
+    log    后台验证分销商调整结果正确
+    click link    link=首页
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]    #访问首页
+    sleep    1
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]    #打开首页
+    切换到前台
+    sleep    1
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    2
+    会员登录    @{分销商帐号}[3]
+    sleep    2
+    click element    xpath=/html/body/div[1]/div[1]/div[1]/div[2]/a    #切换到分销中心
+    page should contain    ${等级}
+    log    前台验证分销商调整结果正确
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    2
+    会员退出且切换到后台
+    sleep    1
+    click link    link=首页    #进入首页模块
+    sleep    1
+    log    分销商等级调整测试通过
+
+分销商奖励佣金订单
+    #修改商品佣金比
+    click link    link=商品
+    sleep    2
+    click element    id=stnav-63
+    sleep    2
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[10]/div/p/a    #编辑商品
+    sleep    2
+    切换到前台    #切换到编辑商品页
+    sleep    2
+    clear element text    id=SecondCommission
+    input text    id=SecondCommission    5    #上一级佣金比例值5
+    clear element text    id=FirstCommission
+    input text    id=FirstCommission    10    #成交店铺佣金比例10
+    sleep    1
+    click button    id=Save    #保存
+    sleep    2
+    close window
+    切换到后台
+    #获取分销商信息
+    click link    link=分销商
+    sleep    1
+    click element    id=stnav-187
+    sleep    2
+    input text    id=UserName    @{分销商帐号}[3]
+    sleep    2
+    click button    id=btn-query
+    sleep    2
+    ${订单前总佣金}    get text    id=ReferralBlance-divrid0
+    log    ${订单前总佣金}
+    click element    id=stnav-169
+    sleep    2
+    ${分销商消费是否参与分佣}    get text    id=IsDistribution
+    log    ${分销商消费是否参与分佣}
+    run keyword if    '${分销商消费是否参与分佣}'=='已关闭'    click element    id=IsDistribution
+    ...    ELSE    click element    id=stnav-169
+    sleep    2
+    ${开启订单价格修改}    get text    id=EnableChangePrice
+    log    ${开启订单价格修改}
+    run keyword if    '${开启订单价格修改}'=='已关闭'    click element    id=EnableChangePrice
+    ...    ELSE    click link    link=分销商
+    sleep    2
+    #分销订单流程
+    click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    click element    id=sells    #全选商品
+    sleep    1
+    click button    id=btn-nopostage    #设置包邮
+    sleep    5
+    input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    2
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
+    sleep    2
+    切换到前台    #切换到商品详情页
+    sleep    1
+    click element    xpath=//*[@id="btnAddToBuy"]/p    #点击立即购买
+    sleep    2
+    click button    id=btnBuyNow    #确定购买
+    sleep    2
+    input text    id=txtUserName    @{分销商帐号}[3]
+    input text    id=txtPassword    123456
+    click button    id=btnUserLogin
+    sleep    10
+    click element    id=submit    #点击提交订单
+    sleep    2
+    click element    id=link-offlinepay    #选择线下支付
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
+    ${url}    Get location
+    sleep    2
+    close window
+    sleep    2
+    切换到后台
+    click link    link=订单
+    sleep    1
+    click element    id=stnav-76
+    sleep    3
+    click element    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[4]/a    #查看订单详情
+    sleep    2
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[1]}    #切换到订单详情
+    ${获取订单分佣}    get text    xpath=//*[@id="div-commissioninfo"]/div/div/p/i
+    ${获取订单分佣去符号}    Should Match Regexp    ${获取订单分佣}    \\d+    #正则去除￥
+    log    ${获取订单分佣去符号}
+    ${获取订单金额}    get text    id=showitemprice
+    ${获取订单金额去符号}    Should Match Regexp    ${获取订单金额}    \\d+    #正则去除￥
+    log    ${获取订单金额去符号}
+    should be equal as integers    ${${获取订单金额去符号}*0.3}    ${获取订单分佣去符号}
+    log    订单详情内佣金计算正确
+    close window    #关闭订单详情页
+    sleep    2
+    切换到后台
+    click link    link=订单
+    sleep    1
+    click element    id=stnav-76
+    sleep    3
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #点击确认收款
+    sleep    2
+    click button    id=popbtn-cnfgoon    #确认收款
+    sleep    2
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
+    sleep    1
+    select from list by value    id=controlExpress    YD,韵达快递    #选择快递
+    input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
+    sleep    1
+    click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
+    sleep    2
+    click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[7]    #确定收货
+    sleep    1
+    click button    id=popbtn-cnfgoon
+    sleep    1
+    #检查分销商佣金
+    click link    link=分销商
+    sleep    1
+    click element    id=stnav-187    #分销商列表
+    sleep    3
+    input text    UserName    @{分销商帐号}[3]
+    sleep    1
+    click button    id=btn-query
+    sleep    2
+    ${订单后总佣金}    get text    id=ReferralBlance-divrid0
+    log    ${订单后总佣金}
+    should be equal as integers    ${${订单后总佣金}-15}    ${订单前总佣金}
+    log    分销商列表内总佣金计算正确
+    sleep    2
+    Execute JavaScript    window.open('${url}')    #打开前台
+    切换到前台
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a
+    sleep    1
+    click element    xpath=/html/body/div[1]/div[1]/div[1]/div[2]/a    #分销商中心
+    sleep    2
+    click element    xpath=/html/body/div[1]/div[5]/ul/li[4]/a/p
+    sleep    2
+    ${分销商中心可提现金额}    get text    xpath=/html/body/div[1]/div[1]/ul/li[1]/div
+    ${分销商中心可提现金额去符号}    Should Match Regexp    ${分销商中心可提现金额}    \\d+    #正则去除￥
+    should contain    ${分销商中心可提现金额去符号}    ${订单后总佣金}
+    log    分销商中心佣金总额正确
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    会员退出且切换到后台
+    click link    link=订单    #点击订单模块
+    log    分销商订单-分销商让利测试通过
+
+删除分销等级和分销商
+    #调整分销商
+    click element    link=分销商    #点击分销商
+    sleep    1
+    click element    link=分销商列表
+    sleep    1
+    click element    id=CheckAll    #全选分销商
+    sleep    2
+    click button    id=batsetgrade    #调整分销商等级
+    sleep    2
+    click element    id=GradeCheckList
+    sleep    1
+    click element    xpath=//*[@id="GradeCheckList"]/option[2]    #选择默认等级
+    sleep    2
+    click element    id=GradeCheck    #确认修改
+    sleep    2
+    click element    id=popbtn-cnfgoon    #确认修改
+    sleep    2
+    #删除分销商
+    click element    link=会员    #点击会员
+    sleep    1
+    click element    link=会员列表
+    sleep    1
+    input text    id=UserName    @{分销商帐号}[0]
+    click element    id=btn_Search    #搜索
+    sleep    2
+    ${a}    Run Keyword And Return Status    Page Should Contain    @{分销商帐号}[0]
+    run keyword if    ${a} !=${TRUE}    log    会员不存在，不需要删除
+    ...    ELSE    删除会员
+    sleep    2
+    click element    link=会员列表
+    sleep    1
+    input text    id=UserName    @{分销商帐号}[1]
+    click element    id=btn_Search    #搜索
+    sleep    2
+    ${b}    Run Keyword And Return Status    Page Should Contain    @{分销商帐号}[1]
+    run keyword if    ${b} !=${TRUE}    log    会员不存在，不需要删除
+    ...    ELSE    删除会员
+    sleep    2
+    click element    link=会员列表
+    sleep    1
+    input text    id=UserName    @{分销商帐号}[3]
+    click element    id=btn_Search    #搜索
+    sleep    2
+    ${c}    Run Keyword And Return Status    Page Should Contain    @{分销商帐号}[3]
+    run keyword if    ${c} !=${TRUE}    log    会员不存在，不需要删除
+    ...    ELSE    删除会员
+    sleep    2
+    #删除分销商等级
+    click element    link=分销商    #点击分销商
+    sleep    1
+    click element    link=分销商等级
+    sleep    1
+    ${c}    Run Keyword And Return Status    Page Should Contain    测试分销等级
+    run keyword if    ${c} !=${TRUE}    log    等级不存在，不需要删除
+    ...    ELSE    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/table/tbody/tr[2]/td[7]/a[2]    #删除

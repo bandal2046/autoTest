@@ -1,0 +1,290 @@
+*** Settings ***
+Library           DateTime
+Library           Selenium2Library
+Library           AutoItLibrary
+Library           Screenshot
+Resource          资源库/keyword.txt
+Resource          资源库/Variables.txt
+
+*** Test Cases ***
+新增供应商--创建新账号
+    [Documentation]    依赖(0)
+    ${supplierG}    set variable    @{供应商账号}[0]
+    click link    id=hnav-248
+    sleep    2
+    click link    id=stnav-257
+    sleep    2
+    click link    id=link-crtnewspl
+    sleep    2
+    input text    id=txtSupplierName    GYSTest1011
+    input text    id=txtPhone    ${supplierG}
+    input text    id=txtPassword    123456
+    input text    id=txtConfirmPassword    123456
+    input text    id=txtContacts    GYSlxr001
+    input text    id=txtContactsPhone    13100000001
+    select from list by label    id=province    湖南省
+    select from list by label    id=city    长沙市
+    select from list by label    id=county    芙蓉区
+    sleep    2
+    input text    id=txtAddress    Culture building
+    input text    id=txtMangeAddress    supplier comment
+    sleep    2
+    click button    id=Save
+    sleep    2
+    #验证新增成功
+    page should contain    GYSTest1011    loglevel=供应商名与预期值不符
+    page should contain    ${supplierG}    loglevel=供应商电话与预期值不符
+    page should contain    GYSlxr001    loglevel=供应商联系人与预期值不符
+    page should contain    13100000001    loglevel=供应商联系电话与预期值不符
+
+新增供应商--从现有账号选择
+    [Documentation]    依赖(0)
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    sleep    2
+    ${memberG}    set variable    @{供应商账号}[1]
+    ${wc}    list windows
+    select window    ${wc[1]}
+    会员注册    ${memberG}
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    close window
+    select window    ${wc[0]}
+    click link    id=hnav-248
+    sleep    2
+    click link    id=stnav-257
+    sleep    2
+    click link    id=link-cpyactspl
+    sleep    2
+    input text    css=#div-srch > div[data-pid="div-1"] > input[data-name="input-uname"]    ${memberG}
+    sleep    2
+    click button    css=#div-srch > div[data-pid="div-2"] > input[data-name="btn-srch"]
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/table/tbody/tr[1]/td[8]/p[2]/a
+    sleep    2
+    click button    css=#div-popcmfbtn > button[data-name="yes"]
+    sleep    2
+    #验证新增成功
+    click link    id=stnav-261
+    sleep    2
+    page should contain    ${memberG}
+
+新增供应商--前端申请
+    [Documentation]    依赖(0)
+    #进入店铺主页配置供应商申请模块
+    click link    id=hnav-1
+    sleep    2
+    click link    id=stnav-54
+    sleep    2
+    click element    id=btn_edit
+    sleep    2
+    click element    xpath=//html/body/div[2]/div/div[1]/div[2]/div/div/div/div/div[1]/div/ul/li[13]/div/i
+    sleep    2
+    click element    xpath=//*[@id="diy-ctrl"]/div/ul/li[1]/div[2]/div/div/a/span
+    sleep    1
+    click link    xpath=//*[@id="diy-ctrl"]/div/ul/li[1]/div[2]/div/div/ul/li[23]/a
+    sleep    2
+    click link    id=j-savePage
+    sleep    2
+    #进入前端,会员申请供应商
+    click link    id=hnav-612
+    sleep    2
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    ${memberG}    set variable    @{供应商账号}[2]
+    ${wc}    list windows
+    select window    ${wc[1]}
+    sleep    2
+    会员注册    ${memberG}
+    click link    xpath=//*[@id="ul"]/li[1]/div/a
+    sleep    1
+    click link    xpath=//*[@id="ul"]/li[1]/div/a
+    sleep    2
+    Execute Javascript    window.scrollTo(0, document.body.scrollHeight)
+    sleep    4
+    click link    link=供应商申请    #点击供应商申请
+    sleep    2
+    Comment    input text    id=txtSupplierName    GYSsq003
+    ${supplierName}    set variable    GYST106
+    input text    id=txtSupplierName    ${supplierName}
+    input text    id=txtContacts    GYSlxr003
+    input text    id=txtContactsPhone    13100000003
+    input text    id=txtAddress    GYSadress
+    sleep    2
+    click element    id=showCityPicker4    #点击选择收货地址
+    sleep    1
+    click element    id=100    #选择浙江省
+    sleep    1
+    click element    id=101    #选择杭州市
+    sleep    1
+    click element    id=102    #选择上城区
+    sleep    1
+    click element    id=10201    #选择清波街道
+    sleep    2
+    click button    id=Save
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    1
+    会员退出切回后台    ${wc}
+    #回到后台进行供应商审批
+    sleep    2
+    click link    id=hnav-248
+    sleep    2
+    click link    id=stnav-260
+    sleep    2
+    page should contain    ${supplierName}    #申请已存在
+    sleep    1
+    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div[1]/div[2]/table/tbody/tr/td[9]/a[2]
+    sleep    1
+    click button    xpath=//*[@id="div-popcmfapprove"]/button[1]
+    sleep    1
+    page should not contain    ${supplierName}    #审批通过
+    #验证供应商列表已存在此数据
+    click link    id=stnav-261
+    sleep    2
+    page should contain    ${memberG}
+
+供应商上架商品
+    [Documentation]    依赖脚本：22.1新增供应商
+    click link    link=供应商
+    sleep    1
+    click link    link=供应商设置
+    click element    xpath=//*[@id="txtUrl"]/a    #打开供应商后台
+    sleep    1
+    ${wc}    list windows
+    select window    ${wc[1]}
+    input text    id=UserName    @{供应商账号}[0]
+    input text    id=Password    123456
+    input text    id=checkcode    8734
+    click element    xpath=//*[@id="Loginform"]/div[5]/button    #登录
+    sleep    2
+    click link    link=商品管理
+    sleep    1
+    click link    link=上传商品    #点击上传商品
+    sleep    1
+    click element    xpath=/html/body/div[2]/div[3]/div[2]/div[1]/div/div[3]/div[1]/label/input    #点击选择综合类目
+    click element    id=11    #选择主分类-电脑硬件
+    click element    id=110201    #选中二级分类-主板
+    click button    id=btnNext    #保存选择内容
+    sleep    5
+    input text    id=ProductName    供应商商品    #输入商品名称
+    sleep    3
+    click element    id=SWFUpload_0
+    win wait    打开
+    win activate    打开
+    sleep    2
+    control set text    \    \    Edit1    ${CURDIR}\\${商品路径}
+    sleep    2
+    control click    \    \    Button1
+    input text    id=pro_20879    宝贝成色    #设置商品属性
+    input text    id=MarketPrice    5000    #原价5000
+    input text    id=MinShowPrice    500    #现价500,勿改
+    input text    id=StockCounts    1000    #库存1000
+    sleep    1
+    click element    id=ReduceType0    #选择下单减库存
+    input text    id=CubicMeter    1.5    #体积1.5
+    input text    id=FreightWeight    2.5    #重量2.5
+    \    #立即上架    #包邮
+    sleep    3
+    click button    id=Save    #保存
+    Wait Until Page Contains Element    id=btnSaveDetail    20    error
+    click button    id=btnSaveDetail    #保存商品
+    sleep    3
+    input text    id=ProductName    供应商商品    #以商品名查询
+    click button    id=btnSearch    #执行查询
+    sleep    3
+    ${name}    get text    css=#list > tbody > tr > td:nth-child(3) > div > div > div.imgInfo > p.setColor > a    #获取商品名称
+    should contain    ${name}    供应商商品    #验证商品名称成功
+    close window
+    select window    ${wc[0]}
+    click link    link=待审核商品
+    sleep    1
+    click element    xpath=//div/p[3]/a    #同意上架
+    sleep    1
+    click element    id=btn_SaveSales
+    sleep    2
+    click link    link=已上架商品
+    sleep    2
+    Comment    input text    id=ProductName    供应商商品
+    Comment    click element    id=btnSearch
+    Comment    sleep    1
+    page should contain    供应商商品
+
+供应商订单发货
+    [Documentation]    依赖脚本：2注册店铺会员；22.1新增供应商；23.1供应商上架商品
+    click link    link=供应商
+    click link    link=已上架商品
+    sleep    2
+    click element    xpath=//tr[1]/td/div/div/div[2]/p[1]/a    #点击商品名称
+    ${titles}    list windows    #获取当前浏览器所有标题
+    select window    ${titles[1]}    #切换至句柄1
+    click element    xpath=//*[@id="btnAddToBuy"]/p    #点击立即购买
+    sleep    1
+    input text    id=txtNumber    2
+    click button    id=btnBuyNow    #确定购买
+    sleep    2
+    会员登录    @{会员帐号}[0]
+    sleep    2
+    ${name}    get text    id=showFreeShipping_0    #配送方式
+    should contain    ${name}    包邮    #验证配送方式为包邮
+    ${a}    get text    xpath=/html/body/div[1]/div[2]/div[3]/div/div/div[7]/p[2]/span    #获取商品价格
+    sleep    1
+    click element    id=submit    #点击提交订单
+    sleep    2
+    click element    id=link-offlinepay    #选择线下支付
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
+    sleep    2
+    click element    xpath=//*[@id="wait-handle"]/a[1]/div/p[2]    #待付款
+    sleep    1
+    ${order}    Get Element Attribute    xpath=//div[1]/div/section[1]/div[1]/div/label/input@value
+    sleep    1
+    click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
+    sleep    1
+    会员退出切回后台    ${titles}
+    click link    link=订单
+    sleep    1
+    input text    id=input-ordernum    ${order}    #根据订单号查询
+    click element    id=btn-query    #点击查询
+    sleep    1
+    click element    xpath=//div[2]/div/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #确认付款
+    sleep    1
+    click element    id=popbtn-cnfgoon    #确认
+    sleep    3
+    click element    xpath=//table/tbody/tr[1]/td[4]/input[6]    #供应商发货
+    sleep    1
+    click element    xpath=//*[@id="btn-cfmsplmod"]    #确认
+    sleep    3
+    click link    link=首页
+    sleep    2
+    click link    link=供应商
+    sleep    1
+    click link    link=供应商设置
+    click element    xpath=//*[@id="txtUrl"]/a    #打开供应商后台
+    ${titles}    list windows
+    select window    ${titles[1]}
+    input text    id=UserName    @{供应商账号}[0]
+    input text    id=Password    123456
+    input text    id=checkcode    8734
+    click element    xpath=//*[@id="Loginform"]/div[5]/button    #登录
+    sleep    2
+    input text    id=input-ordernum    ${order}
+    click element    xpath=//*[@id="btnSearch"]    #点击查询
+    sleep    1
+    click element    xpath=//table/tbody/tr/td[4]/input[2]    #点击发货
+    sleep    1
+    select from list by value    id=controlExpress    YD,韵达快递    #选择快递
+    input text    xpath=//table/tbody/tr/td/div/div/span[4]/input    1234567890    #输入快递单号
+    sleep    1
+    click button    xpath=//div[5]/div/div/div[3]/button[1]    #确定发货
+    sleep    1
+    ${state}    get text    xpath=//div[2]/div[2]/div/div[1]/p
+    should contain    ${state}    已发货
+    close window
+    select window    ${titles[0]}

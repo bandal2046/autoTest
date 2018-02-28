@@ -1,0 +1,221 @@
+*** Settings ***
+Resource          Variables.txt
+Library           Selenium2Library
+
+*** Keywords ***
+会员退出切回后台
+    [Arguments]    ${titles}    # 浏览器元组数
+    [Documentation]    调用该关键字，前提需当前浏览器显示为会员中心
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    close window
+    select window    ${titles[0]}    #切回后台
+
+进入前台页面
+    click link    link=首页    #进入首页模块
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]    #点击访问店铺
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]    #点击电脑上查看
+    sleep    2
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[1]}    #跳转到前台
+
+切换到前台
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[1]}    #跳转到商品详情页
+
+会员退出且切换到后台
+    click element    xpath=//*[@id="to-setting"]/i    #点击设置
+    sleep    1
+    click element    id=btn-quit    #点击退出
+    sleep    1
+    close window
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[0]}    #跳转到后台
+
+会员登录
+    [Arguments]    ${member}    # 会员账号
+    input text    id=txtUserName    ${member}
+    input text    id=txtPassword    123456
+    click button    id=btnUserLogin
+
+获取标题切换
+    ${titles}    Get Window Titles    #获取当前浏览器所有标题
+    select window    ${titles[1]}    #切至前台
+    [Return]    ${titles}
+
+切换到后台
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[0]}    #切换到后台
+
+创建退货物流地址
+    click link    link=设置    #点击商品模块进入商品模块
+    sleep    2
+    click element    id=stnav-234    #切换到物流地址
+    sleep    2
+    click element    id=preview    #新增物流地址
+    sleep    2
+    click element    id=txtShipperType1    #勾选发货
+    click element    id=txtShipperType2    #勾选退货
+    input text    id=txtShipperName    我是发货人和收货人    #输入收货人
+    input text    id=txtAddress    这里写的是详细地址很详细的地址    #输入详细地址
+    input text    id=txtTelPhone    1850000001    #输入电话号码
+    sleep    1
+    click element    id=slt-province
+    sleep    1
+    click element    xpath=//*[@id="slt-province"]/option[2]    #选择省
+    sleep    1
+    click element    id=slt-city
+    sleep    1
+    click element    xpath=//*[@id="slt-city"]/option[2]    #选择市
+    sleep    1
+    click element    id=slt-country
+    sleep    1
+    click element    xpath=//*[@id="slt-country"]/option[2]    #选择县
+    sleep    1
+    click element    id=slt-street
+    sleep    1
+    click element    xpath=//*[@id="slt-street"]/option[2]    #选择街道
+    sleep    2
+    click element    id=btnSave    #保存
+    sleep    2
+
+开启提现线下支付
+    click link    link=设置    #点击商品模块进入商品模块
+    sleep    2
+    click element    id=stnav-181    #点击提现设置
+    sleep    1
+    click button    id=EnableRedpaperDraw    #勾选开启微信红包支付
+    sleep    1
+    clear element text    id=MinimumCash
+    input text    id=MinimumCash    1
+    sleep    1
+    click button    id=btn-save    #保存
+    sleep    2
+
+会员注册
+    [Arguments]    ${memberG}
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    click element    xpath=/html/body/div[1]/div/a    #点击注册
+    sleep    2
+    input text    id=uesrname    ${memberG}    #输入帐号
+    input text    id=Code    7297    #输入验证码
+    input text    id=pass    123456    #输入密码
+    input text    id=passAgain    123456    #再次输入密码
+    sleep    1
+    click button    id=RegisterMes    #点击注册
+    sleep    2
+    click element    xpath=/html/body/div[5]/div[2]/span    #点击注册提示确认
+    sleep    2
+
+新建运费模版
+    click element    xpath=//*[@id="batchOp"]/a[2]    #点击新建通用模版按钮
+    sleep    2
+    input text    id=templateName    通用模版测试    #输入模版名称
+    #计价方式默认选择按件数    #是否包邮默认选择自定义
+    input text    id=defaultFreight1    1
+    input text    id=money1    1
+    input text    id=addNum1    1
+    input text    id=addMoney1    0.5
+    #以上计价规则，一件内1元，每增加1件加0.5元
+    click button    id=btnSaveTemplate    #保存设置
+    sleep    4
+    ${模版名称}    get text    xpath=//*[@id="FreightTemplateList"]/thead/tr/th[1]/label    #获取模版名称
+    should contain    ${模版名称}    通用模版测试    msg=通用模版与预期值不符    #验证模版名称
+    ${首件}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[3]    #获取首件数量
+    should contain    ${首件}    1    msg=通用模版首件数量与预期值不符    #验证首件数量
+    ${首件运费}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[4]    #获取首件运费
+    should contain    ${首件运费}    1    msg=通用模版首件运费与预期值不符    #验证首件运费
+    ${增加件}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[5]    #获取增加件
+    should contain    ${增加件}    1    msg=通用模版增加件与预期值不符    #验证增加件
+    ${增加运费}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[6]    #获取增加运费
+    should contain    ${增加运费}    0.5    msg=通用模版增加运费与预期值不符    #验证增加运费
+    log    配置运费模版测试通过
+    log    计价方式默认选择按件数,计价规则，一件内1元，每增加1件加0.5元
+    sleep    2
+    click link    link=设置
+    sleep    2
+
+注册店铺会员
+    click link    link=首页    #进入首页模块
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]    #点击访问店铺
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]    #点击电脑上查看
+    sleep    2
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[1]}    #跳转到前台
+    sleep    2
+    ${memberG}    set variable    @{会员帐号}[0]
+    会员注册    ${memberG}
+    ${a}    get text    xpath=/html/body/div[1]/header/section[1]/div[2]/p[1]    #获取前端会员名称
+    should contain    ${a}    @{会员帐号}[0]    #验证前端会员名称
+    log    前端验证会员成功
+    click element    xpath=//*[@id="to-shipaddr"]/p    #点击收货地址
+    sleep    2
+    click element    xpath=//*[@id="div-addradd"]/a    #点击新增收货地址
+    sleep    2
+    input text    id=ShipTo    @{会员帐号}[0]    #填入收货人
+    input text    id=CellPhone    @{会员帐号}[0]    #填入电话号码
+    input text    id=address    我是详细地址。我是详细地址。我是详细地址    #填入详细地址
+    sleep    1
+    click element    id=showCityPicker4    #点击选择收货地址
+    sleep    1
+    click element    id=100    #选择浙江省
+    sleep    1
+    click element    id=101    #选择杭州市
+    sleep    1
+    click element    id=102    #选择上城区
+    sleep    1
+    click element    id=10201    #选择清波街道
+    sleep    2
+    click button    id=SaveAddress    #保存地址
+    sleep    2
+    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
+    sleep    2
+    会员退出切回后台    ${titles}
+    sleep    2
+    click link    link=会员    #进入首页模块
+    sleep    2
+    ${b}    get text    xpath=//*[@id="ctl00_ContentPlaceHolder1_grdManager"]/tbody/tr/td[5]    #获取后台会员名称
+    should contain    ${b}    @{会员帐号}[0]    #验证后台会员名称
+    log    后端验证会员成功
+    log    注册店铺会员测试成功
+    click link    link=首页    #进入首页模块
+    sleep    2
+
+关闭注册送优惠券
+    click element    xpath=//*[@id="divfailtips"]/div/div/span    #关闭提示
+    sleep    2
+    click link    id=stnav-598    #营销中心
+    sleep    2
+    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[2]/span    #注册送优惠券
+    sleep    2
+    click element    xpath=//*[@id="mySwitch"]/div/label    #关闭注册送优惠券
+
+会员增加积分
+    sleep    1
+    input text    id=txtSetPoints    20    #输入积分值20
+    input text    id=txtSetRemark    调整积分    #输入备注
+    click button    id=btnSetPoints    #确认修改
+    sleep    2
+
+删除会员
+    sleep    2
+    click element    xpath=//table/tbody/tr[1]/td[1]/input    #勾选会员
+    click element    id=btnDelMembers    #删除
+    sleep    2
+    click element    id=DelMembersAll    #是
+    sleep    1
+    Select From List By Index    id=Status    2    #选择以删除
+    click element    id=btn_Search    #搜索
+    sleep    1
+    click element    xpath=//table/tbody/tr[1]/td[1]/input    #勾选
+    click element    id=ShowRealDel    #点击删除
+    sleep    2
+    click element    id=RelDelMembersAll    #是
+    sleep    1

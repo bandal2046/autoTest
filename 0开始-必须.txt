@@ -1,0 +1,44 @@
+*** Settings ***
+Library           Selenium2Library
+Library           Screenshot
+Resource          资源库/Variables.txt
+Resource          资源库/keyword.txt
+Library           AutoItLibrary
+Library           DateTime
+
+*** Test Cases ***
+登录后台
+    open browser    https://my.xiaokeduo.com    chrome    #打开浏览器
+    sleep    2
+    Maximize Browser Window
+    input text    id=Telphone    ${后台账号}    #输入登录帐号
+    input text    id=Password    123456    #输入登录密码
+    click button    xpath=/html/body/div/form/div[2]/div[2]/div[4]/input    #点击登录按钮
+    log    后台登录成功
+    sleep    2
+
+注册店铺会员
+    click link    link=会员
+    sleep    2
+    click element    id=stnav-86    #进入会员列表
+    sleep    2
+    input text    id=CellPhone    @{会员帐号}[0]    #查询框内输入会员手机号
+    sleep    1
+    click element    id=btn_Search    #提交搜索
+    sleep    5
+    ${a}    Run Keyword And Return Status    Page Should Contain    @{会员帐号}[0]
+    run keyword if    ${a} !=${TRUE}    注册店铺会员
+    ...    ELSE    log    会员已存在，不用再新建
+    sleep    2
+
+配置运费模版
+    click link    link=设置    #点击设置模块进入设置模块
+    click element    id=stnav-151    #切换到订单设置
+    sleep    2
+    ${b}    Run Keyword And Return Status    Page Should Contain    已开启
+    run keyword if    ${b} ==${TRUE}    log    运费模版已经开启
+    ...    ELSE    click element    id=sw-IsLogisticsDistribution
+    sleep    2
+    ${a}    Run Keyword And Return Status    Page Should Contain    通用模版测试
+    run keyword if    ${a} ==${TRUE}    log    运费模版添加成功
+    ...    ELSE    新建运费模版
