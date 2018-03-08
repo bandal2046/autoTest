@@ -5,29 +5,31 @@ Resource          资源库/Variables.txt
 Resource          资源库/keyword.txt
 Library           AutoItLibrary
 Library           DateTime
+Resource          资源库/PublicUI.txt
 
 *** Test Cases ***
 登录后台
-    open browser    https://my.xiaokeduo.com    chrome    #打开浏览器
+    open browser    https://my.xiaokeduo.com    chrome
     sleep    2
     Maximize Browser Window
     input text    id=Telphone    ${后台账号}    #输入登录帐号
     input text    id=Password    123456    #输入登录密码
-    click button    xpath=/html/body/div/form/div[2]/div[2]/div[4]/input    #点击登录按钮
+    click button    ${点击登录按钮}
     log    后台登录成功
     sleep    2
 
 注册店铺会员
     click link    link=会员
     sleep    2
-    click element    id=stnav-86    #进入会员列表
+    click element    ${会员列表}    #进入会员列表
     sleep    2
-    input text    id=CellPhone    @{会员帐号}[0]    #查询框内输入会员手机号
+    input text    ${手机号码}    @{会员帐号}[0]    #查询框内输入会员手机号
     sleep    1
-    click element    id=btn_Search    #提交搜索
+    click element    ${搜索}    #提交搜索
     sleep    5
     ${a}    Run Keyword And Return Status    Page Should Contain    @{会员帐号}[0]
-    run keyword if    ${a} !=${TRUE}    注册店铺会员
+    注册店铺会员
+    Comment    run keyword if    ${a} !=${TRUE}    注册店铺会员
     ...    ELSE    log    会员已存在，不用再新建
     sleep    2
 

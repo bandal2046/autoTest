@@ -1,0 +1,93 @@
+*** Settings ***
+Library           Selenium2Library
+Library           AutoItLibrary
+Library           Screenshot
+Resource          资源库/keyword.txt
+Resource          资源库/Variables.txt
+Library           DateTime
+Resource          资源库/代理商UI.txt
+
+*** Test Cases ***
+新增一级代理商
+    click link    link=代理商
+    sleep    2
+    click element    ${新建代理商}
+    sleep    2
+    click element    ${创建一个新账号}
+    sleep    1
+    click element    ${一级代理}
+    click element    ${确认级别，下一步}
+    sleep    1
+    新建代理商    Auto一级代理    @{代理商账号}[0]
+    input text    ${代理折扣}    6
+    click element    ${区域模式}
+    sleep    2
+    click element    ${选择区域代理:上海}
+    click element    ${区域模式：添加}
+    click element    ${区域模式：确认}
+    click element    ${区域保护}
+    sleep    2
+    click element    ${区域保护：上海}
+    click element    ${区域保护：添加}
+    click element    ${区域保护：确认}
+    click element    ${保存}
+    sleep    1
+    代理商账号验证    Auto一级代理    @{代理商账号}[0]
+
+新增二级代理商
+    click link    link=代理商
+    sleep    2
+    click element    ${新建代理商}
+    sleep    2
+    click element    ${创建一个新账号}
+    sleep    1
+    click element    ${二级代理}
+    click element    ${确认级别，下一步}
+    sleep    1
+    input text    ${输入一级代理商名称}    Auto一级代理
+    sleep    1
+    click element    ${选择一级:第一行}
+    click element    ${确认级别，下一步}
+    sleep    1
+    input text    ${二级代理商折扣}    6.5
+    新建代理商    Auto二级代理    @{代理商账号}[1]
+    click element    ${添加代理区域}
+    sleep    2
+    click element    ${展开省区}
+    click element    ${选中省第一行}
+    click element    ${区域模式：添加}
+    click element    ${区域模式：确认}
+    click element    ${保存}
+    sleep    1
+    代理商账号验证    Auto二级代理    @{代理商账号}[1]
+
+新增三级代理商
+    click link    link=代理商
+    sleep    2
+    click element    ${新建代理商}
+    sleep    2
+    click element    ${创建一个新账号}
+    sleep    1
+    click element    ${三级代理}
+    click element    ${确认级别，下一步}
+    sleep    1
+    input text    ${输入一级代理商名称}    Auto一级代理
+    sleep    1
+    click element    ${选择一级:第一行}
+    input text    ${输入二级代理商名称}    Auto二级代理
+    click element    ${选择二级：第一行}
+    click element    ${确认级别，下一步}
+    sleep    1
+    input text    ${三级代理商折扣}    7.5
+    新建代理商    Auto三级代理    @{代理商账号}[2]
+    click element    ${添加代理区域}
+    sleep    2
+    click element    ${展开省区}
+    sleep    1
+    click element    ${展开市区}
+    click element    ${选中市第一行}
+    click element    ${区域模式：添加}
+    click element    ${区域模式：确认}
+    click element    ${保存}
+    sleep    1
+    代理商账号验证    Auto三级代理    @{代理商账号}[2]

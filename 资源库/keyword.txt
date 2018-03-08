@@ -1,6 +1,7 @@
 *** Settings ***
 Resource          Variables.txt
 Library           Selenium2Library
+Resource          代理商UI.txt
 
 *** Keywords ***
 会员退出切回后台
@@ -218,4 +219,29 @@ Library           Selenium2Library
     click element    id=ShowRealDel    #点击删除
     sleep    2
     click element    id=RelDelMembersAll    #是
+    sleep    1
+
+代理商账号验证
+    [Arguments]    ${代理商名}    ${手机号}
+    click element    ${代理商列表}
+    sleep    2
+    input text    ${搜索:代理商名}    ${代理商名}
+    input text    ${搜索:手机号}    ${手机号}
+    click element    ${搜索}
+    page should contain    ${代理商名}    loglevel=代理商名与预期值不符
+    page should contain    ${手机号}    loglevel=手机号与预期值不符
+
+新建代理商
+    [Arguments]    ${代理商姓名}    ${代理商账号}
+    input text    ${代理商名}    ${代理商姓名}
+    input text    ${登录手机号码}    ${代理商账号}
+    input text    ${登录密码}    000000
+    input text    ${联系人}    Auto
+    input text    ${联系号码}    ${代理商账号}
+    select from list by label    ${所在地区：省}    上海
+    sleep    1
+    select from list by label    ${所在地区：市}    上海市
+    sleep    1
+    select from list by label    ${所在地区：县}    黄浦区
+    input text    ${详细地址}    浦东新区港湾路315号
     sleep    1
