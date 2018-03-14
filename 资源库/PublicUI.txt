@@ -8,4 +8,4 @@ ${点击添加}           xpath=/html/body/div[1]/div[3]/div/a    # 前台添加
 ${点击登录按钮}         xpath=/html/body/div/form/div[2]/div[2]/div[4]/input    # 后台商户登录按钮
 ${会员列表}           id=stnav-86    # 后台会员列表
 ${手机号码}           id=CellPhone    #会员列表搜索手机号码
-${搜索}             id=btn_Search    # 后台会员列表搜索按钮
+${会员搜索}           id=btn_Search    # 后台会员列表搜索按钮

@@ -31,7 +31,7 @@ ${区域保护：确认}        //*[@id="allcontent"]/div/div[1]/div[2]/div/div[
 ${代理商列表}          //*[@id="stnav-390"]
 ${搜索:代理商名}        //*[@id="input-agentname"]
 ${搜索:手机号}         //*[@id="input-phonenum"]
-${搜索}             //*[@id="btn-search"]
+${搜索}             id=btn_Search
 ${输入一级代理商名称}      //*[@id="input-l1agentname"]
 ${选择一级:第一行}       //div/div[2]/ol/div/ul/li[1]/span
 ${添加代理区域}         //*[@id="btn-addagentarea"]

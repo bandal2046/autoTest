@@ -1,0 +1,9 @@
+*** Settings ***
+Library           AppiumLibrary
+Library           Screenshot
+
+*** Test Cases ***
+test
+    Comment    open Application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=4.2.2    deviceName=127.0.0.1:62001    app=${CURDIR}/demoapp/OrangeDemoApp.apk
+    ...    appPackage=com.netease.qa.orangedemo    appActivity=MainActivity
+    open Application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=4.2.2    deviceName=127.0.0.1:62001    appPackage=com.tencent.mm    appActivity=.ui.LauncherUI

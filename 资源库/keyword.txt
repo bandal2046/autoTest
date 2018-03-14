@@ -227,7 +227,7 @@ Resource          代理商UI.txt
     sleep    2
     input text    ${搜索:代理商名}    ${代理商名}
     input text    ${搜索:手机号}    ${手机号}
-    click element    ${搜索}
+    click element    ${代理商搜索}
     page should contain    ${代理商名}    loglevel=代理商名与预期值不符
     page should contain    ${手机号}    loglevel=手机号与预期值不符
 

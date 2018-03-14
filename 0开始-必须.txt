@@ -9,6 +9,7 @@ Resource          资源库/PublicUI.txt
 
 *** Test Cases ***
 登录后台
+    [Tags]    login
     open browser    https://my.xiaokeduo.com    chrome
     sleep    2
     Maximize Browser Window
@@ -19,13 +20,14 @@ Resource          资源库/PublicUI.txt
     sleep    2
 
 注册店铺会员
+    [Tags]    login
     click link    link=会员
     sleep    2
     click element    ${会员列表}    #进入会员列表
     sleep    2
     input text    ${手机号码}    @{会员帐号}[0]    #查询框内输入会员手机号
     sleep    1
-    click element    ${搜索}    #提交搜索
+    click element    ${会员搜索}    #提交搜索
     sleep    5
     ${a}    Run Keyword And Return Status    Page Should Contain    @{会员帐号}[0]
     注册店铺会员
