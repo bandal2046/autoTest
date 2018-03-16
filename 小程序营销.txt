@@ -1,14 +1,15 @@
 *** Settings ***
-Library           Selenium2Library
+Library           Selenium2Library    run_on_failure=Selenium2Library.Capture Page Screenshot
 Library           Screenshot
 Library           AutoItLibrary
 Resource          小程序/keys.txt
 Library           AppiumLibrary    run_on_failure=AppiumLibrary.Capture Page Screenshot
 Resource          小程序/publicModule.txt
-Resource          小程序/小程序营销UI.txt
+Resource          小程序/营销秒杀UI.txt
+Library           DateTime
 
 *** Test Cases ***
-秒杀
+秒杀-参与活动
     微信打开小程序
     AppiumLibrary.click element    ${活动专题}
     sleep    2
@@ -46,9 +47,21 @@ test
     sleep    3
     AppiumLibrary.click element    ${我的秒杀}
     sleep    3
-    AppiumLibrary.click element    xpath=//*[@content-desc='返回']     #成功页返回
+    AppiumLibrary.click element    xpath=//*[@content-desc='返回']    #成功页返回
     Comment    AppiumLibrary.click element    ${秒杀数据}
     Comment    sleep    3
     Comment    ${订单文本}    AppiumLibrary.Get Element Attribute    ${订单编号}    name
     Comment    ${订单号}    Should Match Regexp    ${订单文本}    \\d+    #正则去除订单号
     Comment    log    ${订单号}
+
+秒杀-新建活动
+    登录小程序后台
+    Selenium2Library.go to    https://my.xiaokeduo.com/WxaSeckill/CreateSecKill    #新增秒杀活动页面
+    Selenium2Library.input text    name=title    秒杀自动
+    ${etime}    BuiltIn.get time
+    sleep    2
+    Selenium2Library.input text    xpath=//*[@id="div-inputtime"]/input[1]    ${etime}
+    ${edtime}    add time to date    ${etime}    10minutes
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day} ${datetime.hour}:${datetime.minute}:${datetime.second}
+    Selenium2Library.input text    xpath=//*[@id="div-inputtime"]/input[2]    ${endtime}

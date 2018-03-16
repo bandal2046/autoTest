@@ -102,3 +102,12 @@ Resource          keys.txt
     sleep    3
     ${text}    AppiumLibrary.Get Element Attribute    xpath=//android.view.View[contains(@content-desc,"已完成")]    name
     should contain    ${text}    已完成
+
+登录小程序后台
+    open browser    https://my.xiaokeduo.com/wxawxaindex/indexedit    chrome    #打开浏览器
+    sleep    2
+    Maximize Browser Window
+    sleep    2
+    Selenium2Library.input text    xpath=//*[@id="Telphone"]    18866668888    #输入登录帐号
+    Selenium2Library.input text    xpath=//*[@id="Password"]    123456    #输入登录密码
+    Selenium2Library.click button    xpath=/html/body/div/form/div[2]/div[2]/div[4]/input    #点击登录按钮

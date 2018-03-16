@@ -13,3 +13,4 @@ ${会员}             xpath=//*[@text='我的']
 ${我的秒杀}           xpath=//android.view.View[@content-desc="我的秒杀"]
 ${秒杀数据}           xpath=//android.view.View[5]    # 我的秒杀第一行数据
 ${订单编号}           xpath=//android.view.View[contains(@content-desc,"订单号：")]
+${活动标签}           name=title

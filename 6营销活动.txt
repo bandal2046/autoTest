@@ -79,9 +79,9 @@ Resource          资源库/Variables.txt
     #注册会员，验证是否赠送优惠券
     click link    id=hnav-612
     sleep    3
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     sleep    1
     ${memberG}    set variable    @{会员帐号}[1]
     ${wc}    list windows
@@ -132,9 +132,9 @@ Resource          资源库/Variables.txt
     sleep    2
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     sleep    1
     ${wc}    list windows
     select window    ${wc[1]}
@@ -186,9 +186,9 @@ Resource          资源库/Variables.txt
     ...    应用会员：@{会员帐号}[0]
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     sleep    1
     ${wc}    list windows
     select window    ${wc[1]}
@@ -238,9 +238,9 @@ Resource          资源库/Variables.txt
     ...    应用会员：@{会员帐号}[0]
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     sleep    2
     ${wc}    list windows
     select window    ${wc[1]}
@@ -349,9 +349,9 @@ Resource          资源库/Variables.txt
     #注册会员，验证是否赠送积分
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     sleep    1
     ${memberG}    set variable    @{会员帐号}[2]
     ${wc}    list windows
@@ -550,9 +550,9 @@ Resource          资源库/Variables.txt
     #进行下单验证积分抵现
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     sleep    1
     ${wc}    list windows
     select window    ${wc[1]}
@@ -696,7 +696,7 @@ Resource          资源库/Variables.txt
     page should contain    100
     page should contain    进行中
 
-积分--参与积分兑换活动
+X（积分--参与积分兑换活动）
     [Documentation]    依赖（0）（2）（4.1）（24.24）（15.1）
     #进入店铺主页配置店铺活动模块
     click link    id=hnav-1
@@ -826,9 +826,9 @@ Resource          资源库/Variables.txt
     [Documentation]    依赖（0）（2）（4.1）（24.25配置了店铺活动模块）（24.31）
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     sleep    1
     ${wc}    list windows
     select window    ${wc[1]}

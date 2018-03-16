@@ -1,5 +1,5 @@
 *** Variables ***
-${后台账号}           18866667777
+${后台账号}           18811112222
 ${全局关键字}          1109
 ${前台首页}           https://vshop.xiaokeduo.com/mid11403/did0/default/index
 ${商品路径}           商品图.jpg

@@ -4,3 +4,6 @@
 [0312/120055:ERROR:process_reader_win.cc(114)] NtOpenThread: {无法访问} 过程已请求访问一对象，但未给访问权限。  (0xc0000022)
 [0312/120055:ERROR:exception_snapshot_win.cc(87)] thread ID 14096 not found in process
 [0312/120055:WARNING:crash_report_exception_handler.cc(61)] ProcessSnapshotWin::Initialize failed
+[0315/181111:ERROR:process_reader_win.cc(114)] NtOpenThread: {无法访问} 过程已请求访问一对象，但未给访问权限。  (0xc0000022)
+[0315/181111:ERROR:exception_snapshot_win.cc(87)] thread ID 1144 not found in process
+[0315/181111:WARNING:crash_report_exception_handler.cc(61)] ProcessSnapshotWin::Initialize failed

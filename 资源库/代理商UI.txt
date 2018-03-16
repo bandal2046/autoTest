@@ -43,3 +43,4 @@ ${选择二级：第一行}       //div/div[2]/ol/div[2]/ul/li[1]/span
 ${三级代理商折扣}        //*[@id="thirdDiscount"]
 ${展开市区}           //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div/div[1]/div/ul/li[1]/ul/li/div/div/div[1]
 ${选中市第一行}         //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div/div[1]/div/ul/li[1]/ul/li/ul/li[1]/div/div
+${代理商查询}          id=btn-search

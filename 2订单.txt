@@ -296,7 +296,7 @@ Library           DateTime
     sleep    1
     click element    xpath=/html/body/div[6]/div[2]/span[2]    #再次确认收货
     sleep    1
-    click element    xpath=/html/body/div[6]/div[2]/span[1]    #取消评论
+    click element    xpath=//html/body/div[6]/div[2]/span[1]    #取消评论
     sleep    1
     ${会员订单列表订单状态}    get text    xpath=//*[@id="orderList"]/section[1]/div[1]/span/label    #获取会员订单列表订单状态
     should contain    ${会员订单列表订单状态}    交易成功    #验证会员订单列表订单状态正确
@@ -836,3 +836,13 @@ Library           DateTime
     sleep    2
     ${text3}    get text    xpath=/html/body/div[6]/p
     should contain    ${text3}    删除成功
+
+test
+    click link    link=商品    #点击商品模块进入商品模块
+    sleep    4
+    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
+    sleep    2
+    ${titles}    Get Window Titles    #获取全部窗口
+    select window    ${titles[1]}    #跳转到商品详情页
+    select window    ${titles[0]}
+    click link    link=订单    #点击商品模块进入商品模块

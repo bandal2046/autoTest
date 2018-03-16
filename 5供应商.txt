@@ -41,9 +41,9 @@ Resource          资源库/Variables.txt
     [Documentation]    依赖(0)
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
-    sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click element    link=访问店铺
+    sleep    2
+    click element    link=电脑上查看
     sleep    2
     ${memberG}    set variable    @{供应商账号}[1]
     ${wc}    list windows
@@ -77,26 +77,27 @@ Resource          资源库/Variables.txt
 新增供应商--前端申请
     [Documentation]    依赖(0)
     #进入店铺主页配置供应商申请模块
-    click link    id=hnav-1
+    click link    link=店铺
     sleep    2
-    click link    id=stnav-54
+    click link    link=店铺导航
     sleep    2
-    click element    id=btn_edit
+    click element    xpath=//*[@id="addmenu"]    #添加一级导航
     sleep    2
-    click element    xpath=//html/body/div[2]/div/div[1]/div[2]/div/div/div/div/div[1]/div/ul/li[13]/div/i
+    click element    xpath=//*[@id="spLinkTitle"]    #选择链接
     sleep    2
-    click element    xpath=//*[@id="diy-ctrl"]/div/ul/li[1]/div[2]/div/div/a/span
+    click element    xpath=//*[@id="ul-dropdmenu"]/li[12]/a    #供应商申请
     sleep    1
-    click link    xpath=//*[@id="diy-ctrl"]/div/ul/li[1]/div[2]/div/div/ul/li[23]/a
+    input text    xpath=//*[@id="txttitle"]    供应商
+    click element    xpath=//*[@id="btnOK"]
     sleep    2
-    click link    id=j-savePage
+    click element    xpath=//*[@id="form0"]/div[2]/input    #保存
     sleep    2
     #进入前端,会员申请供应商
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     ${memberG}    set variable    @{供应商账号}[2]
     ${wc}    list windows
     select window    ${wc[1]}
@@ -108,7 +109,7 @@ Resource          资源库/Variables.txt
     sleep    2
     Execute Javascript    window.scrollTo(0, document.body.scrollHeight)
     sleep    4
-    click link    link=供应商申请    #点击供应商申请
+    click link    link=供应商    #点击供应商申请
     sleep    2
     Comment    input text    id=txtSupplierName    GYSsq003
     ${supplierName}    set variable    GYST106

@@ -61,9 +61,9 @@ Library           DateTime
     log    调整分销商后台分销商列表数据正确
     click link    link=首页
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]    #访问首页
+    click element    link=访问店铺    #访问首页
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]    #打开首页
+    click element    link=电脑上查看    #打开首页
     sleep    1
     切换到前台
     sleep    1
@@ -328,9 +328,9 @@ Library           DateTime
     #注册会员
     click link    link=首页    #点击首页
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
-    sleep    1
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click element    link=访问店铺
+    sleep    2
+    click element    link=电脑上查看
     sleep    2
     ${memberG}    set variable    @{分销商帐号}[0]
     切换到前台
@@ -411,9 +411,9 @@ Library           DateTime
     #上级分销商前台验证结果
     click link    link=首页    #点击首页
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
-    sleep    1
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click element    link=访问店铺
+    sleep    2
+    click element    link=电脑上查看
     sleep    2
     切换到前台
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
@@ -555,9 +555,9 @@ Library           DateTime
     log    后台验证分销商调整结果正确
     click link    link=首页
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]    #访问首页
-    sleep    1
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]    #打开首页
+    click element    link=访问店铺
+    sleep    2
+    click element    link=电脑上查看
     切换到前台
     sleep    1
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心

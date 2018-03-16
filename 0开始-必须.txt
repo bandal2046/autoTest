@@ -10,7 +10,7 @@ Resource          资源库/PublicUI.txt
 *** Test Cases ***
 登录后台
     [Tags]    login
-    open browser    https://my.xiaokeduo.com    chrome
+    open browser    https://my-online.xiaokeduo.com    chrome
     sleep    2
     Maximize Browser Window
     input text    id=Telphone    ${后台账号}    #输入登录帐号

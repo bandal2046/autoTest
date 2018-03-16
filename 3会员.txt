@@ -27,8 +27,8 @@ Resource          资源库/PublicUI.txt
     click button    id=btnCloseSetPoints    #关闭弹出层
     click element    link=首页    #首页
     sleep    1
-    click element    ${访问店铺}    #访问店铺
-    click element    ${在电脑查看}    #在电脑查看
+    click element    link=访问店铺    #访问店铺
+    click element    link=电脑上查看    #在电脑查看
     sleep    1
     ${titles}    Get Window Titles    #获取当前浏览器所有标题
     select window    ${titles[1]}    #切换至句柄1
@@ -63,8 +63,8 @@ Resource          资源库/PublicUI.txt
     click element    ${关闭}    #关闭
     click element    link=首页    #首页
     sleep    1
-    click element    ${访问店铺}    #访问店铺
-    click element    ${在电脑查看}    #在电脑查看
+    click element    link=访问店铺    #访问店铺
+    click element    link=电脑上查看    #在电脑查看
     sleep    1
     ${titles}    获取标题切换
     click element    ${点击会员中心}    #点击会员中心
@@ -222,7 +222,7 @@ Resource          资源库/PublicUI.txt
     click element    xpath=//table/tbody/tr[1]/td[1]/input    #勾选会员
     click element    id=btnShowGrade    #设置等级
     sleep    1
-    Select From List By Index    id=rankList1    2    #选择第三行等级
+    Select From List By Index    id=rankList1    1    #选择第三行等级
     click element    id=btnChangeGradeAll
     sleep    2
     ${name}    get text    xpath=//table/tbody/tr[1]/td[7]    #获取等级名称
@@ -246,8 +246,9 @@ Resource          资源库/PublicUI.txt
     input text    id=CellPhone    @{会员帐号}[2]
     click element    id=btn_Search    #搜索
     sleep    2
-    ${a}    Run Keyword And Return Status    Page Should Contain    @{会员帐号}[2]
-    run keyword if    ${a} !=${TRUE}    log    会员不存在，不需要删除
+    ${a}    Run Keyword And Return Status    Page Should Contain    暂无数据
+    log    ${a}
+    run keyword if    ${a} ==${TRUE}    log    会员不存在，不需要删除
     ...    ELSE    删除会员
     sleep    2
     click element    link=会员列表
