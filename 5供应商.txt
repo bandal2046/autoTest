@@ -1,6 +1,6 @@
 *** Settings ***
 Library           DateTime
-Library           Selenium2Library
+Library           Selenium2Library    implicit_wait=10
 Library           AutoItLibrary
 Library           Screenshot
 Resource          资源库/keyword.txt
@@ -16,7 +16,7 @@ Resource          资源库/Variables.txt
     sleep    2
     click link    id=link-crtnewspl
     sleep    2
-    input text    id=txtSupplierName    GYSTest1011
+    input text    id=txtSupplierName    GYSTest1022
     input text    id=txtPhone    ${supplierG}
     input text    id=txtPassword    123456
     input text    id=txtConfirmPassword    123456
@@ -32,7 +32,7 @@ Resource          资源库/Variables.txt
     click button    id=Save
     sleep    2
     #验证新增成功
-    page should contain    GYSTest1011    loglevel=供应商名与预期值不符
+    page should contain    GYSTest1022    loglevel=供应商名与预期值不符
     page should contain    ${supplierG}    loglevel=供应商电话与预期值不符
     page should contain    GYSlxr001    loglevel=供应商联系人与预期值不符
     page should contain    13100000001    loglevel=供应商联系电话与预期值不符
@@ -65,7 +65,7 @@ Resource          资源库/Variables.txt
     sleep    2
     click button    css=#div-srch > div[data-pid="div-2"] > input[data-name="btn-srch"]
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/table/tbody/tr[1]/td[8]/p[2]/a
+    click link    link=加为供应商
     sleep    2
     click button    css=#div-popcmfbtn > button[data-name="yes"]
     sleep    2
@@ -89,7 +89,7 @@ Resource          资源库/Variables.txt
     sleep    1
     input text    xpath=//*[@id="txttitle"]    供应商
     click element    xpath=//*[@id="btnOK"]
-    sleep    2
+    sleep    5
     click element    xpath=//*[@id="form0"]/div[2]/input    #保存
     sleep    2
     #进入前端,会员申请供应商
@@ -112,7 +112,7 @@ Resource          资源库/Variables.txt
     click link    link=供应商    #点击供应商申请
     sleep    2
     Comment    input text    id=txtSupplierName    GYSsq003
-    ${supplierName}    set variable    GYST106
+    ${supplierName}    set variable    GYST108
     input text    id=txtSupplierName    ${supplierName}
     input text    id=txtContacts    GYSlxr003
     input text    id=txtContactsPhone    13100000003
@@ -141,7 +141,7 @@ Resource          资源库/Variables.txt
     sleep    2
     page should contain    ${supplierName}    #申请已存在
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div[1]/div[2]/table/tbody/tr/td[9]/a[2]
+    click link    link=通过申请
     sleep    1
     click button    xpath=//*[@id="div-popcmfapprove"]/button[1]
     sleep    1
@@ -153,17 +153,18 @@ Resource          资源库/Variables.txt
 
 供应商上架商品
     [Documentation]    依赖脚本：22.1新增供应商
-    click link    link=供应商
-    sleep    1
-    click link    link=供应商设置
-    click element    xpath=//*[@id="txtUrl"]/a    #打开供应商后台
-    sleep    1
-    ${wc}    list windows
-    select window    ${wc[1]}
-    input text    id=UserName    @{供应商账号}[0]
-    input text    id=Password    123456
-    input text    id=checkcode    8734
-    click element    xpath=//*[@id="Loginform"]/div[5]/button    #登录
+    Comment    click link    link=供应商
+    Comment    sleep    1
+    Comment    click link    link=供应商设置
+    Comment    click element    xpath=//*[@id="txtUrl"]/a    #打开供应商后台
+    Comment    sleep    1
+    Comment    ${wc}    list windows
+    Comment    select window    ${wc[1]}
+    Comment    input text    id=UserName    @{供应商账号}[0]
+    Comment    input text    id=Password    123456
+    Comment    input text    id=checkcode    8734
+    Comment    click element    xpath=//*[@id="Loginform"]/div[5]/button    #登录
+    供应商登录    @{供应商账号}[0]
     sleep    2
     click link    link=商品管理
     sleep    1
@@ -202,8 +203,9 @@ Resource          资源库/Variables.txt
     sleep    3
     ${name}    get text    css=#list > tbody > tr > td:nth-child(3) > div > div > div.imgInfo > p.setColor > a    #获取商品名称
     should contain    ${name}    供应商商品    #验证商品名称成功
-    close window
-    select window    ${wc[0]}
+    Comment    close window
+    Comment    select window    ${wc[0]}
+    go to    ${后台域名}
     click link    link=待审核商品
     sleep    1
     click element    xpath=//div/p[3]/a    #同意上架

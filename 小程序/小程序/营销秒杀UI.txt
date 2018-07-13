@@ -1,5 +1,6 @@
 *** Variables ***
-${秒杀活动名}          xpath=//android.view.View[contains(@content-desc,"秒杀自动")]
+${秒杀活动名}          秒杀自动3
+${选择秒杀活动}         xpath=//android.view.View[contains(@content-desc,"${秒杀活动名}")]
 ${立即抢购}           xpath=//android.view.View[@content-desc="立即抢购"]
 ${确定}             xpath=//android.view.View[@content-desc="立即抢购"]
 ${提交}             xpath=//android.view.View[@content-desc="提交"]
@@ -7,10 +8,17 @@ ${立即支付}           xpath=//android.view.View[@content-desc="立即支付"
 ${余额支付}           xpath=//android.view.View/android.view.View[8]    # 元素抓取为“包邮”，实际点击为余额支付
 ${确认支付}           xpath=//android.view.View/android.view.View[16]    # 元素抓取为“立即支付”，实际点击确认支付
 ${秒杀成功}           xpath=//android.view.View/android.view.View[0]
-${活动专题}           xpath=//android.view.View[@content-desc="活动专题"]
 ${返回}             xpath=//*[@content-desc='返回']
 ${会员}             xpath=//*[@text='我的']
 ${我的秒杀}           xpath=//android.view.View[@content-desc="我的秒杀"]
 ${秒杀数据}           xpath=//android.view.View[5]    # 我的秒杀第一行数据
 ${订单编号}           xpath=//android.view.View[contains(@content-desc,"订单号：")]
 ${活动标签}           name=title
+${秒杀选择商品}         //*[@id="div-awords"]/a
+${商品搜索栏}          //*[@id="popdiv-gdsrch"]/input
+${搜索按钮}           //*[@id="popdiv-gdsrch"]/a
+${活动库存}           //*[@id="div_seckill2"]/div[1]/div/input
+${秒杀价格}           //*[@id="div_seckill2"]/div[2]/input
+${限购数量}           //*[@id="div_seckill3"]/div/input
+${保存}             //*[@id="popdi"]/button
+${秒杀选取}           link=选取

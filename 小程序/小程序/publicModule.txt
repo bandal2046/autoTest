@@ -1,0 +1,308 @@
+﻿*** Settings ***
+Library           Selenium2Library
+Library           Screenshot
+Library           AutoItLibrary
+Library           AppiumLibrary    run_on_failure=AppiumLibrary.Capture Page Screenshot
+Resource          keys.txt
+
+*** Keywords ***
+登录后台
+    open browser    https://my.xiaokeduo.com    chrome    #打开浏览器
+    sleep    2
+    Maximize Browser Window
+    sleep    2
+    Selenium2Library.input text    id=Telphone    18866668888    #输入登录帐号
+    Selenium2Library.input text    id=Password    123456    #输入登录密码
+    Selenium2Library.click button    xpath=/html/body/div/form/div[2]/div[2]/div[4]/input    #点击登录按钮
+    log    后台登录成功
+    sleep    2
+
+后台发货
+    [Arguments]    ${订单编号}
+    Selenium2Library.click link    link=订单
+    sleep    2
+    Selenium2Library.input text    id=input-ordernum    ${订单编号}
+    Selenium2Library.click element    id=btn-query    #点击搜索
+    sleep    2
+    Selenium2Library.click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
+    sleep    1
+    Selenium2Library.select from list by value    id=controlExpress    HHTT,天天快递    #选择快递
+    Selenium2Library.input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
+    sleep    1
+    Selenium2Library.click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
+    sleep    3
+
+添加收货地址
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"新建收货地址\"]    #点击新建收货地址
+    sleep    1
+    AppiumLibrary.click element    id=com.tencent.mm:id/alk    #新建地址不使用微信默认地址
+    sleep    1
+    AppiumLibrary.input text    xpath=//android.view.View[@content-desc=\"姓名\"]    Beckham    #填入收货人
+    AppiumLibrary.input text    xpath=//android.view.View[@content-desc=\"手机号\"]    18000000001    #填入电话号码
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"--请选择--\"]    #点击选择省
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text=\"确定\"]    #选择浙江省
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"--请选择--\"]    #点击选择市
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text=\"确定\"]    #选择杭州市
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"--请选择--\"]    #点击选择区
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text=\"确定\"]    #选择上城区
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"--请选择--\"]    #点击选择街道
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text=\"确定\"]    #选择清波街道
+    sleep    1
+    AppiumLibrary.input text    xpath=//android.view.View[@content-desc=\"楼栋楼层或门牌号\"]    18000000001    #填入详细地址
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[15]/android.view.View[2]    #设置为默认地址
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"确定\"]    #保存
+    sleep    1
+
+获取营销订单号
+    [Arguments]    ${活动名}
+    AppiumLibrary.click element    xpath=//*[@content-desc='返回']    #成功页返回
+    sleep    2
+    AppiumLibrary.click element    xpath=//*[@content-desc='返回']    #活动列表页返回
+    sleep    1
+    AppiumLibrary.click element    xpath=//*[@text='会员']    #会员
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="${活动名}"]
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.view.View[5]    #活动页第一行数据
+    sleep    3
+    ${订单文本}    AppiumLibrary.Get Element Attribute    xpath=//android.view.View[contains(@content-desc,"订单号：")]    name    #获取活动详情页订单编号
+    ${订单号}    Should Match Regexp    ${订单文本}    \\d+    #正则去除订单号
+    log    ${订单号}
+    [Return]    ${订单号}
+
+小程序确认收货
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"待收货\"]    #进入小程序待收货
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"确认收货\"]    #小程序点击确认收货
+    sleep    3
+    AppiumLibrary.click element    xpath=//*[@text='是']    #小程序点击是，确认收货
+    sleep    3
+    ${text}    AppiumLibrary.Get Element Attribute    xpath=//android.view.View[contains(@content-desc,"已完成")]    name
+    should contain    ${text}    已完成
+
+登录小程序后台
+    open browser    https://my.xiaokeduo.com/wxawxaindex/indexedit    chrome    #打开浏览器
+    sleep    2
+    Maximize Browser Window
+    sleep    2
+    Selenium2Library.input text    xpath=//*[@id="Telphone"]    18866668888    #输入登录帐号
+    Selenium2Library.input text    xpath=//*[@id="Password"]    123456    #输入登录密码
+    Selenium2Library.click button    xpath=/html/body/div/form/div[2]/div[2]/div[4]/input    #点击登录按钮
+
+上传活动图片
+    Selenium2Library.click element    id=js_upFile1
+    win wait    打开
+    win activate    打开
+    sleep    2
+    control set text    \    \    Edit1    ${CURDIR}\\${活动图路径}
+    sleep    2
+    control click    \    \    Button1
+
+搜索栏验证
+    [Arguments]    ${活动标签}
+    Selenium2Library.input text    xpath=//*[@id="setWidth"]/div[1]/input    ${活动标签}
+    Selenium2Library.click element    xpath=//*[@id="setWidth"]/div[4]/button    #搜索
+    sleep    2
+    page should contain    ${活动标签}    loglevel=供应商名与预期值不符
+
+设置商品包邮
+    sleep    2
+    Selenium2Library.click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    Selenium2Library.click element    id=sells    #全选商品
+    sleep    1
+    Selenium2Library.click button    id=btn-nopostage    #设置包邮
+    sleep    5
+
+开启余额支付
+    sleep    2
+    Selenium2Library.click link    link=系统    #点击设置模块进入设置模块
+    Selenium2Library.click element    id=stnav-147    #切换到收款帐号设置
+    sleep    2
+    Selenium2Library.click link    link=账户余额    #切换到账户余额设置
+    sleep    2
+    ${b}    Selenium2Library.get text    id=offlineEnable
+    run keyword if    '${b}' == '已开启'    log    余额支付已开启
+    ...    ELSE    Selenium2Library.click element    id=offlineEnable
+    sleep    2
+    ${a}    Selenium2Library.get text    id=BalanceofflineEnable
+    run keyword if    '${a}' =='已开启'    log    账户余额申请提现已开启
+    ...    ELSE    Selenium2Library.click element    id=BalanceofflineEnable
+
+配置运费模版
+    Selenium2Library.click link    link=设置    #点击设置模块进入设置模块
+    Selenium2Library.click element    id=stnav-151    #切换到订单设置
+    sleep    2
+    ${b}    Run Keyword And Return Status    Page Should Contain    已开启
+    run keyword if    ${b} ==${TRUE}    log    运费模版已经开启
+    ...    ELSE    click element    id=sw-IsLogisticsDistribution
+    sleep    2
+    ${a}    Run Keyword And Return Status    Page Should Contain    通用模版测试
+    run keyword if    ${a} ==${TRUE}    log    运费模版添加成功
+    ...    ELSE    新建运费模版
+
+新建运费模版
+    Selenium2Library.click element    xpath=//*[@id="batchOp"]/a[2]    #点击新建通用模版按钮
+    sleep    2
+    Selenium2Library.input text    id=templateName    通用模版测试    #输入模版名称
+    #计价方式默认选择按件数    #是否包邮默认选择自定义
+    Selenium2Library.input text    id=defaultFreight1    1
+    Selenium2Library.input text    id=money1    1
+    Selenium2Library.input text    id=addNum1    1
+    Selenium2Library.input text    id=addMoney1    1
+    #以上计价规则，一件内1元，每增加1件加0.5元
+    Selenium2Library.click button    id=btnSaveTemplate    #保存设置
+    sleep    4
+    ${模版名称}    get text    xpath=//*[@id="FreightTemplateList"]/thead/tr/th[1]/label    #获取模版名称
+    should contain    ${模版名称}    通用模版测试    msg=通用模版与预期值不符    #验证模版名称
+    ${首件}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[3]    #获取首件数量
+    should contain    ${首件}    1    msg=通用模版首件数量与预期值不符    #验证首件数量
+    ${首件运费}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[4]    #获取首件运费
+    should contain    ${首件运费}    1    msg=通用模版首件运费与预期值不符    #验证首件运费
+    ${增加件}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[5]    #获取增加件
+    should contain    ${增加件}    1    msg=通用模版增加件与预期值不符    #验证增加件
+    ${增加运费}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[6]    #获取增加运费
+    should contain    ${增加运费}    1    msg=通用模版增加运费与预期值不符    #验证增加运费
+    log    配置运费模版测试通过
+    log    计价方式默认选择按件数,计价规则，一件内1元，每增加1件加0.5元
+    sleep    2
+    Selenium2Library.click link    link=设置
+    sleep    2
+
+进入营销活动
+    [Arguments]    ${activity}
+    sleep    2
+    Selenium2Library.click link    link=小程序
+    sleep    2
+    Selenium2Library.click link    link=营销活动
+    sleep    2
+    Selenium2Library.click link    link=${activity}
+    sleep    2
+
+新建退货物流地址
+    [Documentation]    审核退货订单，弹出同意退款页
+    ...
+    ...    1、判断当前页是否有“设置退货物流地址”
+    ...    2、如果有，新建物流地址
+    ...    3、如果没有，执行上一场景
+    Selenium2Library.click link    link=系统    #点击商品模块进入商品模块
+    sleep    2
+    Selenium2Library.click element    id=stnav-234    #切换到物流地址
+    sleep    2
+    Selenium2Library.click element    id=preview    #新增物流地址
+    sleep    2
+    Selenium2Library.click element    id=txtShipperType1    #勾选发货
+    Selenium2Library.click element    id=txtShipperType2    #勾选退货
+    Selenium2Library.input text    id=txtShipperName    我是发货人和收货人    #输入收货人
+    Selenium2Library.input text    id=txtAddress    这里写的是详细地址很详细的地址    #输入详细地址
+    Selenium2Library.input text    id=txtTelPhone    1850000001    #输入电话号码
+    sleep    1
+    Selenium2Library.click element    id=slt-province
+    sleep    1
+    Selenium2Library.click element    xpath=//*[@id="slt-province"]/option[2]    #选择省
+    sleep    1
+    Selenium2Library.click element    id=slt-city
+    sleep    1
+    Selenium2Library.click element    xpath=//*[@id="slt-city"]/option[2]    #选择市
+    sleep    1
+    Selenium2Library.click element    id=slt-country
+    sleep    1
+    Selenium2Library.click element    xpath=//*[@id="slt-country"]/option[2]    #选择县
+    sleep    1
+    Selenium2Library.click element    id=slt-street
+    sleep    1
+    Selenium2Library.click element    xpath=//*[@id="slt-street"]/option[2]    #选择街道
+    sleep    2
+    Selenium2Library.click element    id=btnSave    #保存
+    sleep    2
+
+选择预计购买的商品
+    [Arguments]    ${a}
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text=\"首页\"]    #进入小程序首页
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"搜索\"]    #进入小程序商品列表
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"${a}\"]    #选择第一个商品
+    sleep    2
+
+收货地址设置
+    ${a}    Run Keyword And Return Status    AppiumLibrary.page should contain Text    新建收货地址
+    run keyword if    ${a} == ${True}    添加收货地址
+    ...    ELSE    log    已经有添加收货地址，不用再新建
+    sleep    2
+
+选择余额支付且支付订单
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[12]    #选择余额支付
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"余额支付\"]    #余额立即支付
+    sleep    5
+
+订单列表获取订单号
+    ${订单列表订单编号}    AppiumLibrary.get element attribute    xpath=//android.view.View[contains(@content-desc,"订单号：")]    name
+    log    ${订单列表订单编号}
+    ${订单号}    Should Match Regexp    ${订单列表订单编号}    \\d+    #正则去除￥
+    sleep    2
+    [Return]    ${订单号}
+
+小程序端确认收货
+    #切换到小程序-确认收货
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"待收货\"]    #进入小程序待收货
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"确认收货\"]    #小程序点击确认收货
+    sleep    3
+    AppiumLibrary.click element    id=com.tencent.mm:id/all    #小程序点击是，确认收货
+    sleep    3
+
+退款/退货申请
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[7]    #点击需要退款的订单
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="申请售后"]    #点击申请售后
+    sleep    2
+    AppiumLibrary.input text    xpath=//android.view.View/android.view.View[3]    10    #退款10块钱
+    sleep    2
+    AppiumLibrary.input text    xpath=//android.view.View[@content-desc="在此输入退款原因"]    test    #输入退款原因
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="提交申请"]    #点击提交申请
+    sleep    2
+
+后台处理退款订单
+    Selenium2Library.click link    link=订单    #切换到订单页
+    sleep    2
+    Selenium2Library.click element    id=stnav-84    #切换到售后订单
+    sleep    2
+    Selenium2Library.click element    xpath = //table[@class='table allmiddle']/tbody/tr/td/table/tbody/tr/td[5]/span/a    #点击退款审批
+    sleep    2
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #切换到退款详情页
+    ${后台查看申请退款金额}    Selenium2Library.get text    //*[@id="home"]/div[2]/table[4]/tbody/tr/td[3]/p[2]/span/i    #获取后台申请退款金额
+    ${后台查看申请退款金额去符号}    Should Match Regexp    ${后台查看申请退款金额}    \\d+    #正则去除￥
+    should contain    ${后台查看申请退款金额去符号}    10
+    sleep    2
+    Selenium2Library.click button    id=btnAgree    #售后审批
+    sleep    2
+    Selenium2Library.input text    id=txtAdminRemark    后台审批退款    #后台输入退款备注
+    sleep    1
+    Selenium2Library.click button    id=btnAgreeConfirm    #确认审批
+    sleep    3
+    close window
+    select window    ${wc[0]}
+    sleep    2
+
+后台发放退款
+    Selenium2Library.click element    id=stnav-620    #切换到售后退款页
+    sleep    2
+    Selenium2Library.click element    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[8]/input    #点击发放
+    sleep    1
+    Selenium2Library.click button    id=popbtn-cnfgoon    #确认发放
+    sleep    1
+    Selenium2Library.click link    link=订单    #切换到订单页
+    sleep    2

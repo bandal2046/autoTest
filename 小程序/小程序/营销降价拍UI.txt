@@ -1,0 +1,21 @@
+*** Variables ***
+${降价拍活动名}         降价持续
+${降价开始时间}         name=startTime
+${降价活动标签}         //*[@id="subdiv-title"]/input
+${降价活动库存}         //*[@id="step1"]/div[2]/div/div[3]/div/input
+${起拍价格}           //*[@id="step1"]/div[2]/div/div[4]/div/input
+${最低价格}           //*[@id="step1"]/div[2]/div/div[5]/div/input
+${每分钟下降}          //*[@id="step1"]/div[2]/div/div[6]/div/input[1]
+${下降金额}           //*[@id="step1"]/div[2]/div/div[6]/div/input[2]
+${计算}             link=计算
+${降价保存}           //*[@id="popdi"]/button
+${降价活动标签栏}        //input[@type='text']
+${列表搜索}           //div[4]/button
+${降价拍选择商品}        xpath=//*[@id="div-awords"]/a
+${选择降价拍活动}        xpath=//android.view.View[contains(@content-desc,"${降价拍活动名}")]
+${我要出价}           xpath=//android.view.View[@content-desc="我要出价"]
+${降价确定购买}         xpath=//android.view.View[@content-desc="我要出价"]    #实际点击确定
+${确认提交}           xpath=//android.view.View[@content-desc="确认提交"]
+${降价余额支付}         xpath=//android.view.View/android.view.View[7]
+${降价确认支付}         xpath=//android.view.View[@content-desc="确认提交"]
+${降价订单详情}         xpath=//android.view.View[@content-desc="订单详情"]

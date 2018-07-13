@@ -1,6 +1,6 @@
 *** Settings ***
 Library           DateTime
-Library           Selenium2Library
+Library           Selenium2Library    implicit_wait=10
 Library           AutoItLibrary
 Library           Screenshot
 Resource          资源库/Variables.txt
@@ -25,13 +25,15 @@ Resource          资源库/PublicUI.txt
     sleep    2
     ${low_integral}    get text    id=NowPoints    #获取后台当前积分
     click button    id=btnCloseSetPoints    #关闭弹出层
-    click element    link=首页    #首页
+    Reload Page
+    sleep    2
+    click link    link=首页    #进入首页模块
     sleep    1
     click element    link=访问店铺    #访问店铺
     click element    link=电脑上查看    #在电脑查看
     sleep    1
-    ${titles}    Get Window Titles    #获取当前浏览器所有标题
-    select window    ${titles[1]}    #切换至句柄1
+    ${wc}    list windows    #获取当前浏览器所有标题
+    select window    ${wc[1]}    #切换至句柄1
     sleep    1
     click element    ${点击会员中心}    #点击会员中心
     sleep    2
@@ -42,7 +44,7 @@ Resource          资源库/PublicUI.txt
     ${integral}    get text    ${获取会员当前积分}    #获取会员当前积分
     should contain    ${low_integral}    ${integral}    msg=后台与前台会员积分不匹配，积分修改失败!
     click element    ${点击会员中心}    #点击会员中心
-    会员退出切回后台    ${titles}
+    会员退出切回后台    ${wc}
 
 会员余额
     [Documentation]    Author：蒋达为
@@ -61,12 +63,14 @@ Resource          资源库/PublicUI.txt
     ${a}    get text    id=lbNowAmount    #获取后台当前余额
     ${low_balance}    Should Match Regexp    ${a}    \\d+    #正则去除￥
     click element    ${关闭}    #关闭
+    Reload Page
+    sleep    2
     click element    link=首页    #首页
     sleep    1
     click element    link=访问店铺    #访问店铺
     click element    link=电脑上查看    #在电脑查看
     sleep    1
-    ${titles}    获取标题切换
+    ${wc}    获取标题切换
     click element    ${点击会员中心}    #点击会员中心
     sleep    2
     会员登录    @{会员帐号}[0]
@@ -76,7 +80,7 @@ Resource          资源库/PublicUI.txt
     ${b}    get text    ${获取前台当前余额}    #获取前台当前余额
     should contain    ${low_balance}    ${b}    msg=后台与前台会员余额不匹配，余额修改失败!
     click element    ${点击会员中心}    #点击会员中心
-    会员退出切回后台    ${titles}
+    会员退出切回后台    ${wc}
 
 新增会员等级
     [Documentation]    Author：蒋达为

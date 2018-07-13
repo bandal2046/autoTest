@@ -1,48 +1,51 @@
 *** Settings ***
-Library           Selenium2Library
 Library           Screenshot
 Resource          资源库/Variables.txt
 Resource          资源库/keyword.txt
+Resource          资源库/PublicUI.txt
 Library           AutoItLibrary
 Library           DateTime
-Resource          资源库/PublicUI.txt
+Library           Selenium2Library    implicit_wait=10
 
 *** Test Cases ***
 登录后台
     [Tags]    login
-    open browser    https://my-online.xiaokeduo.com    chrome
-    sleep    2
+    open browser    ${后台域名}    chrome
     Maximize Browser Window
     input text    id=Telphone    ${后台账号}    #输入登录帐号
     input text    id=Password    123456    #输入登录密码
     click button    ${点击登录按钮}
     log    后台登录成功
-    sleep    2
 
 注册店铺会员
     [Tags]    login
     click link    link=会员
-    sleep    2
     click element    ${会员列表}    #进入会员列表
-    sleep    2
-    input text    ${手机号码}    @{会员帐号}[0]    #查询框内输入会员手机号
-    sleep    1
-    click element    ${会员搜索}    #提交搜索
-    sleep    5
     ${a}    Run Keyword And Return Status    Page Should Contain    @{会员帐号}[0]
-    注册店铺会员
-    Comment    run keyword if    ${a} !=${TRUE}    注册店铺会员
+    run keyword if    ${a} !=${TRUE}    注册店铺会员
     ...    ELSE    log    会员已存在，不用再新建
-    sleep    2
 
 配置运费模版
-    click link    link=设置    #点击设置模块进入设置模块
+    click link    link=系统    #点击设置模块进入设置模块
     click element    id=stnav-151    #切换到订单设置
-    sleep    2
     ${b}    Run Keyword And Return Status    Page Should Contain    已开启
     run keyword if    ${b} ==${TRUE}    log    运费模版已经开启
     ...    ELSE    click element    id=sw-IsLogisticsDistribution
-    sleep    2
     ${a}    Run Keyword And Return Status    Page Should Contain    通用模版测试
     run keyword if    ${a} ==${TRUE}    log    运费模版添加成功
     ...    ELSE    新建运费模版
+
+（本地）配置店铺导航
+    click link    link=店铺
+    click element    id=stnav-55    #切换到店铺导航
+    ${b}    Run Keyword And Return Status    Page Should Contain    已开启
+    run keyword if    ${b} ==${TRUE}    log    导航已经开启
+    ...    ELSE    click element    id=offlineEnable
+    ${a}    Get Matching Xpath Count    xpath=//*[@id="ulmenu"]/li    #获取当前导航数量
+    Repeat Keyword    ${a}    （本地）删除店铺导航
+    （本地）添加导航    店铺主页
+    （本地）添加导航    全部商品
+    （本地）添加导航    购物车
+    （本地）添加导航    会员主页
+    click element    xpath=//*[@id="form0"]/div[2]/input    #保存
+    click link    link=店铺

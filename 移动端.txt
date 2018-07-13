@@ -1,6 +1,6 @@
 *** Settings ***
-Library           AppiumLibrary
 Library           Screenshot
+Library           AppiumLibrary
 
 *** Test Cases ***
 test

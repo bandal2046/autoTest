@@ -1,0 +1,6 @@
+*** Variables ***
+${选择商品}           //*[@id="selectBtn"]
+${商品搜索栏}          //*[@id="popdiv-gdsrch"]/input
+${商品查询}           //*[@id="popdiv-gdsrch"]/a
+${选取}             //*[@id="popul-goods"]/li/a[2]
+${活动专题}           xpath=//android.view.View[@content-desc="活动专题"]

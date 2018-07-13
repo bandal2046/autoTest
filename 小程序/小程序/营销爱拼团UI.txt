@@ -1,0 +1,23 @@
+*** Variables ***
+${爱拼团活动名}         拼团持续
+${开始时间}           name=startTime
+${结束时间}           name=endTime
+${拼团活动标签}         //input[@type='text']
+${拼团选择商品}         //*[@id="div-awords"]/a
+${商品搜索栏}          //*[@id="popdiv-gdsrch"]/input
+${拼团查询}           //*[@id="popdiv-gdsrch"]/a
+${拼团选取}           //*[@id="popul-goods"]/li/a[2]
+${拼团活动库存}         //*[@id="Sku1"]/div[1]/div/input
+${拼团价}            //*[@id="Sku1"]/div[2]/div/input
+${成团人数}           xpath=(//input[@type='text'])[6]
+${成团时限}           xpath=(//input[@type='text'])[7]
+${拼团限购数量}         xpath=(//input[@type='text'])[8]
+${拼团保存}           //button[@type='submit']
+${拼团搜索商品名称}       //*[@id="setWidth"]/div[1]/input
+${拼团搜索按钮}         //*[@id="setWidth"]/div[3]/button
+${选择拼团活动}         xpath=//android.view.View[contains(@content-desc,"${爱拼团活动名}")]
+${去开团}            xpath=//android.view.View[@content-desc="去开团"]
+${前台确定购买}         xpath=//android.view.View[@content-desc="去开团"]    #实际点击的是确认
+${拼团确认弹出支付方式}     xpath=//android.view.View[@content-desc="确认支付"]
+${拼团余额支付}         xpath=//android.view.View/android.view.View[7]    # 元素抓取为“包邮”，实际点击为余额支付
+${拼团确认支付}         xpath=//android.view.View[@content-desc="确认支付"]    # 元素抓取为“立即支付”，实际点击确认支付

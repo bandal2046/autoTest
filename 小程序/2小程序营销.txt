@@ -1,0 +1,305 @@
+*** Settings ***
+Library           Selenium2Library    run_on_failure=Selenium2Library.Capture Page Screenshot
+Library           Screenshot
+Library           AutoItLibrary
+Resource          小程序/keys.txt
+Library           AppiumLibrary    run_on_failure=AppiumLibrary.Capture Page Screenshot
+Resource          小程序/publicModule.txt
+Resource          小程序/营销秒杀UI.txt
+Library           DateTime
+Resource          小程序/营销爱拼团UI.txt
+Resource          小程序/营销降价拍UI.txt
+Resource          小程序/PublicUI.txt
+Resource          小程序/营销返现团UI.txt
+
+*** Test Cases ***
+秒杀-新建活动
+    进入营销活动    限时秒杀
+    ${etime}    BuiltIn.get time
+    Selenium2Library.click element    xpath=//*[@id="create-bgact"]/button    #新建秒杀活动
+    sleep    2
+    Comment    Selenium2Library.input text    name=startTime    ${etime}
+    ${edtime}    add time to date    ${etime}    15minutes
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day} ${datetime.hour}:${datetime.minute}:${datetime.second}
+    log    ${endtime}
+    Selenium2Library.input text    name=endTime    ${endtime}
+    sleep    2
+    Selenium2Library.input text    name=startTime    ${etime}
+    Selenium2Library.input text    name=title    ${秒杀活动名}
+    Selenium2Library.click element    name=title
+    上传活动图片
+    Selenium2Library.click element    ${秒杀选择商品}    #选择商品
+    sleep    2
+    Selenium2Library.input text    ${商品搜索栏}    ${活动商品}
+    Selenium2Library.click element    ${搜索按钮}
+    sleep    2
+    Selenium2Library.click element    ${秒杀选取}
+    sleep    2
+    Selenium2Library.input text    ${活动库存}    100
+    Selenium2Library.input text    ${秒杀价格}    10
+    Selenium2Library.input text    ${限购数量}    10
+    Selenium2Library.click element    ${保存}
+    sleep    2
+    搜索栏验证    ${秒杀活动名}
+    Selenium2Library.click element    link=营销
+
+秒杀-参与活动
+    AppiumLibrary.click element    ${活动专题}
+    sleep    2
+    AppiumLibrary.click element    ${选择秒杀活动}
+    sleep    2
+    AppiumLibrary.click element    ${立即抢购}
+    sleep    3
+    AppiumLibrary.click element    ${确定}
+    sleep    5
+    AppiumLibrary.click element    ${提交}
+    sleep    2
+    AppiumLibrary.click element    ${立即支付}
+    sleep    1
+    AppiumLibrary.click element    ${余额支付}
+    sleep    1
+    AppiumLibrary.click element    ${确认支付}
+    sleep    5
+    AppiumLibrary.page should contain Text    秒杀成功
+    sleep    1
+    ${订单}    获取营销订单号    我的秒杀
+    log    ${订单}
+    AppiumLibrary.click element    ${返回}
+    AppiumLibrary.click element    ${返回}    #返回到小程序会员中心
+    #打开浏览器-发货
+    Selenium2Library.go to    https://my.xiaokeduo.com/Store?type=3&channelId=18    #跳转到后台首页
+    后台发货    ${订单}
+    sleep    3
+    #切换到小程序-确认收货
+    小程序确认收货
+    sleep    3
+    AppiumLibrary.click element    ${返回}
+    sleep    1
+    AppiumLibrary.click element    xpath=//*[@text='首页']    #返回首页
+
+爱拼团-新建活动
+    进入营销活动    爱拼团
+    ${etime}    BuiltIn.get time
+    Selenium2Library.click element    xpath=//*[@id="create-bgact"]/button
+    sleep    2
+    Selenium2Library.input text    ${开始时间}    ${etime}
+    ${edtime}    add time to date    ${etime}    10minutes
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day} ${datetime.hour}:${datetime.minute}:${datetime.second}
+    Selenium2Library.input text    ${结束时间}    ${endtime}
+    Selenium2Library.input text    ${拼团活动标签}    ${爱拼团活动名}
+    Selenium2Library.click element    ${拼团活动标签}
+    上传活动图片
+    Selenium2Library.click element    ${拼团选择商品}    #选择商品
+    sleep    2
+    Selenium2Library.input text    ${商品搜索栏}    ${活动商品}
+    Selenium2Library.click element    ${拼团查询}
+    sleep    2
+    Selenium2Library.click element    ${拼团选取}
+    sleep    2
+    Selenium2Library.input text    ${拼团活动库存}    100
+    Selenium2Library.input text    ${拼团价}    10
+    Selenium2Library.input text    ${成团人数}    2
+    Selenium2Library.input text    ${成团时限}    1
+    Selenium2Library.input text    ${拼团限购数量}    2
+    Selenium2Library.click element    ${拼团保存}
+    sleep    8
+    Selenium2Library.input text    ${拼团搜索商品名称}    ${活动商品}
+    set window size    1120    880
+    sleep    2
+    Selenium2Library.click element    ${拼团搜索按钮}    #搜索
+    sleep    2
+    page should contain    ${活动商品}    loglevel=活动名与预期值不符
+    Selenium2Library.click element    link=营销
+
+爱拼团-开团
+    AppiumLibrary.click element    ${活动专题}
+    sleep    3
+    AppiumLibrary.click element    ${选择拼团活动}
+    sleep    2
+    AppiumLibrary.click element    ${去开团}
+    sleep    3
+    AppiumLibrary.click element    ${前台确定购买}
+    sleep    5
+    AppiumLibrary.click element    ${拼团确认弹出支付方式}
+    sleep    2
+    AppiumLibrary.click element    ${拼团余额支付}
+    sleep    1
+    AppiumLibrary.click element    ${拼团确认支付}
+    sleep    5
+    AppiumLibrary.page should contain Text    开团成功
+    sleep    3
+    AppiumLibrary.click element    ${返回}
+    sleep    1
+    AppiumLibrary.click element    ${返回}    #返回首页
+
+降价拍-新建活动
+    进入营销活动    降价拍
+    ${etime}    BuiltIn.get time
+    Selenium2Library.click element    xpath=//*[@id="create-bgact"]/button    #新建活动
+    sleep    2
+    Selenium2Library.input text    ${降价开始时间}    ${etime}
+    sleep    2
+    Selenium2Library.input text    ${降价活动标签}    ${降价拍活动名}
+    Selenium2Library.click element    ${降价活动标签}
+    上传活动图片
+    Selenium2Library.input text    ${降价活动库存}    100
+    Selenium2Library.click element    ${降价拍选择商品}    #选择商品
+    sleep    2
+    Selenium2Library.input text    ${商品搜索栏}    ${活动商品}
+    Selenium2Library.click element    ${商品查询}
+    sleep    2
+    Selenium2Library.click element    ${选取}
+    sleep    2
+    Selenium2Library.input text    ${降价活动库存}    100
+    Selenium2Library.input text    ${起拍价格}    20
+    Selenium2Library.input text    ${最低价格}    0.01
+    Selenium2Library.input text    ${每分钟下降}    100
+    Selenium2Library.input text    ${下降金额}    0.01
+    Selenium2Library.click link    ${计算}
+    sleep    2
+    Selenium2Library.click element    ${降价保存}
+    sleep    12
+    Selenium2Library.input text    ${降价活动标签栏}    ${降价拍活动名}
+    set window size    1120    880
+    sleep    2
+    Selenium2Library.click element    ${列表搜索}    #搜索
+    sleep    2
+    page should contain    ${活动商品}    loglevel=活动名与预期值不符
+    Selenium2Library.click element    link=营销
+
+降价拍-竞拍
+    AppiumLibrary.click element    ${活动专题}
+    sleep    3
+    AppiumLibrary.click element    ${选择降价拍活动}
+    sleep    4
+    AppiumLibrary.click element    ${我要出价}
+    sleep    3
+    AppiumLibrary.click element    ${降价确定购买}
+    sleep    5
+    AppiumLibrary.click element    ${确认提交}
+    sleep    2
+    AppiumLibrary.click element    ${降价余额支付}
+    sleep    1
+    AppiumLibrary.click element    ${降价确认支付}
+    sleep    5
+    AppiumLibrary.page should contain Text    竞拍成功！
+    sleep    1
+    AppiumLibrary.click element    ${降价订单详情}
+    sleep    3
+    ${订单文本}    AppiumLibrary.Get Element Attribute    xpath=//android.view.View[contains(@content-desc,"订单号：")]    name    #获取活动详情页订单编号
+    ${订单号}    Should Match Regexp    ${订单文本}    \\d+    #正则去除订单号
+    log    ${订单号}
+    AppiumLibrary.click element    ${返回}
+    sleep    2
+    AppiumLibrary.click element    ${返回}    #返回到首页
+    sleep    1
+    AppiumLibrary.click element    xpath=//*[@text='会员']
+    sleep    3
+    #打开浏览器-发货
+    Selenium2Library.go to    https://my.xiaokeduo.com/Store?type=3&channelId=18    #跳转到后台首页
+    后台发货    ${订单号}
+    sleep    3
+    #切换到小程序-确认收货
+    小程序确认收货
+    sleep    3
+    AppiumLibrary.click element    ${返回}
+    sleep    1
+    AppiumLibrary.click element    xpath=//*[@text='首页']    #返回首页
+
+返现团-新建活动
+    进入营销活动    返现团
+    Maximize Browser Window
+    ${etime}    BuiltIn.get time
+    Selenium2Library.click element    xpath=//*[@id="create-bgact"]/button    #新增返现团
+    sleep    2
+    Selenium2Library.input text    ${返现开始时间}    ${etime}
+    ${edtime}    add time to date    ${etime}    10minutes
+    ${datetime}    convert date    ${edtime}    datetime
+    ${endtime}    set variable    ${datetime.year}-${datetime.month}-${datetime.day} ${datetime.hour}:${datetime.minute}:${datetime.second}
+    Selenium2Library.input text    ${返现结束时间}    ${endtime}
+    Selenium2Library.input text    ${返现活动标签}    ${返现团活动名}
+    Selenium2Library.click element    ${返现活动标签}
+    上传活动图片
+    Selenium2Library.click element    ${返现选择商品}
+    sleep    2
+    Selenium2Library.input text    ${返现商品搜索栏}    ${返现活动商品}
+    Selenium2Library.click element    ${返现商品查询}
+    sleep    2
+    Selenium2Library.click element    ${返现选取}
+    sleep    2
+    Selenium2Library.input text    ${返现活动库存}    100
+    Selenium2Library.input text    ${返现团购价格}    10
+    Selenium2Library.input text    ${返现设置-满件}    1
+    Selenium2Library.input text    ${返现设置-返元}    1
+    Selenium2Library.click element    ${返现保存}
+    sleep    8
+    Selenium2Library.input text    ${返现活动标签栏}    ${返现团活动名}
+    set window size    1120    880
+    sleep    2
+    Selenium2Library.click element    ${返现列表搜索}    #搜索
+    sleep    2
+    page should contain    ${活动商品}    loglevel=活动名与预期值不符
+    Selenium2Library.click element    link=营销
+
+返现团-立即团
+    AppiumLibrary.click element    ${活动专题}
+    sleep    3
+    AppiumLibrary.click element    ${选择返现团活动}
+    sleep    4
+    AppiumLibrary.click element    ${立即团}
+    sleep    3
+    AppiumLibrary.click element    ${返现确认购买}
+    sleep    5
+    AppiumLibrary.click element    ${返现确认订单}
+    sleep    2
+    AppiumLibrary.click element    ${返现余额支付}
+    sleep    1
+    AppiumLibrary.click element    ${返现确认支付}
+    sleep    5
+    AppiumLibrary.page should contain Text    团购成功！
+    sleep    1
+    AppiumLibrary.click element    ${返现返回首页}
+    sleep    3
+    AppiumLibrary.click element    ${选择返现团活动}
+    sleep    4
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="会员"]    #进入会员中心
+    sleep    4
+    #返现团结束活动
+    Selenium2Library.go to    https://my.xiaokeduo.com/Store?type=3&channelId=18    #跳转到后台首页
+    进入营销活动    返现团
+    sleep    1
+    Selenium2Library.input text    xpath=//input[@type='text']    ${返现团活动名}    #返现活动标签搜索
+    Selenium2Library.click element    ${返现搜索}    #点击搜索
+    sleep    2
+    Selenium2Library.click element    ${返现第一行数据停止}
+    sleep    2
+    Selenium2Library.click element    ${返现停止确认}
+    sleep    2
+    Selenium2Library.click element    link=营销
+    #查询订单
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="我的返现团"]
+    sleep    30    #活动结束后等待系统生成订单
+    AppiumLibrary.click element    ${选择返现团活动}    #根据活动标签选择成团订单
+    sleep    3
+    AppiumLibrary.click element    ${返现查看订单详情}
+    sleep    3
+    ${订单文本}    AppiumLibrary.Get Element Attribute    xpath=//android.view.View[contains(@content-desc,"订单号：")]    name    #获取活动详情页订单编号
+    ${订单号}    Should Match Regexp    ${订单文本}    \\d+    #正则去除订单号
+    log    ${订单号}
+    AppiumLibrary.click element    ${返回}
+    sleep    2
+    AppiumLibrary.click element    ${返回}    #返回到首页
+    sleep    1
+    Comment    AppiumLibrary.click element    xpath=//*[@text='会员']
+    Comment    sleep    3
+    #打开浏览器-发货
+    后台发货    ${订单号}
+    sleep    3
+    #切换到小程序-确认收货
+    小程序确认收货
+    sleep    3
+    AppiumLibrary.click element    ${返回}
+    sleep    1
+    AppiumLibrary.click element    xpath=//*[@text='首页']    #返回首页

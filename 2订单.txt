@@ -1,10 +1,11 @@
 *** Settings ***
-Library           Selenium2Library
+Library           Selenium2Library    implicit_wait=10
 Library           AutoItLibrary
 Library           Screenshot
 Resource          资源库/keyword.txt
 Resource          资源库/Variables.txt
 Library           DateTime
+Resource          资源库/PublicUI.txt
 
 *** Test Cases ***
 包邮订单-检查邮费
@@ -13,130 +14,137 @@ Library           DateTime
     ...    2、配置运费模版：运费模版
     ...    4、新建商品（单规格）：商品数据
     click link    link=商品    #点击商品模块进入商品模块
-    sleep    2
+    #sleep    2
+    Wait Until page contains    原价    #######修改点
     click element    id=sells    #全选商品
-    sleep    1
+    #sleep    1
     click button    id=btn-nopostage    #设置包邮
-    sleep    5
+    #sleep    5
     input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
     click button    id=btnSearch    #执行查询
-    sleep    2
+    #sleep    2
     ${数量}    get text    xpath=//*[@id="list"]/tbody/tr/td[5]/div    #获取商品库存
     log    ${数量}
     click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
-    sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到商品详情页
-    sleep    1
+    #sleep    2
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到商品详情页
+    #sleep    1
     click element    xpath=//*[@id="btnAddToBuy"]/p    #点击立即购买
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    id=btnBuyNow    #######修改点
     click button    id=btnBuyNow    #确定购买
-    sleep    2
+    #sleep    2
     会员登录    @{会员帐号}[0]
-    sleep    3
+    #sleep    3
     ${name}    get text    id=showFreeShipping_0    #配送方式
     should contain    ${name}    包邮    #验证配送方式为包邮
-    ${a}    get text    xpath=/html/body/div[1]/div[2]/div[3]/div/div/div[7]/p[2]/span    #获取商品价格
-    sleep    1
+    ${a}    get text    id=AllSumPrice    #获取商品价格
+    sleep    3    #######修改点
     click element    id=submit    #点击提交订单
-    sleep    2
+    #sleep    2
     click element    id=link-offlinepay    #选择线下支付
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="order-lists"]/span[2]    #查看已成交订单
-    sleep    3
+    #sleep    3
     ${b}    get text    xpath=//*[@id="orderList"]/section[1]/div[3]/p/span    #获取订单实付价格
-    should contain    ${a}    ${b}    #验证订单价格与实付价格一致，确定包邮
-    sleep    2
-    select window    ${titles[0]}    #跳转到后台
-    sleep    2
+    should contain    ${b}    ${a}    #验证订单价格与实付价格一致，确定包邮
+    #sleep    2
+    select window    ${wc[0]}    #跳转到后台
+    #sleep    2
     click link    link=订单    #点击订单模块
-    sleep    2
-    ${c}    get text    xpath= //*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/p/strong    #获取后台订单实付价格
-    should contain    ${a}    ${c}    #验证订单价格与实付价格一致，确定包邮
+    #sleep    2
+    ${c}    get text    ${获取后台订单实付价格}    #获取后台订单实付价格
+    should contain    ${c}    ${a}    #验证订单价格与实付价格一致，确定包邮
     click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #点击确认收款
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    id=popbtn-cnfgoon    #######修改点
     click button    id=popbtn-cnfgoon    #确认收款
-    sleep    2
-    ${后台订单状态}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[1]/p[1]    #获取后台订单状态
+    sleep    2    #######修改点
+    ${后台订单状态}    get text    ${获取后台订单状态}    #获取后台订单状态
     should contain    ${后台订单状态}    待发货    #验证后台发货状态
     click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
-    sleep    1
+    #sleep    1
     select from list by value    id=controlExpress    YD,韵达快递    #选择快递
     input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
-    sleep    1
+    #sleep    1
     click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
-    sleep    1
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到前台
-    sleep    1
+    #sleep    1
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到前台
+    #sleep    1
     click element    xpath=//*[@id="muitable"]/a[1]/p    #刷新订单列表数据
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="orderList"]/section/div[4]/a    #确认收货
-    sleep    1
+    #sleep    1
     click element    xpath=/html/body/div[6]/div[2]/span[2]    #再次确认收货
-    sleep    1
+    sleep    1    #######修改点
     click element    xpath=/html/body/div[6]/div[2]/span[1]    #取消评论
-    sleep    1
+    #sleep    1
     ${会员订单列表订单状态}    get text    xpath=//*[@id="orderList"]/section[1]/div[1]/span/label    #获取会员订单列表订单状态
     should contain    ${会员订单列表订单状态}    交易成功    #验证会员订单列表订单状态正确
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
-    sleep    2
-    会员退出切回后台    ${titles}
+    #sleep    2
+    会员退出切回后台    ${wc}
     click link    link=订单    #点击订单模块
-    sleep    2
-    ${后台订单列表订单状态}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[1]/p[1]    #获取后台订单状态
+    #sleep    2
+    ${后台订单列表订单状态}    get text    ${获取后台订单状态}    #获取后台订单状态
     should contain    ${后台订单列表订单状态}    交易成功    #验证后台订单列表订单状态正确
     log    包邮订单邮费计算正确
     click link    link=商品    #点击商品模块进入商品模块
-    sleep    2
+    #sleep    2
     input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
     click button    id=btnSearch    #执行查询
-    sleep    2
+    #sleep    2
     ${数量2}    get text    xpath=//*[@id="list"]/tbody/tr/td[5]/div    #获取商品库存
     log    ${数量2}
     should be equal as integers    ${${数量}-${数量2}}    1
     log    库存减扣正确
     log    包邮订单测试通过
-    sleep    2
+    #sleep    2
     click link    link=首页    #进入首页模块
-    sleep    2
+    #sleep    2
 
 邮费订单-检查邮费
     click link    link=商品    #点击商品模块进入商品模块
-    sleep    2
+    #sleep    2
+    Wait Until page contains    原价    #######修改点
     click element    id=sells    #全选商品
-    sleep    1
+    #sleep    1
     click button    id=btn-setpsttmp    #设置运费
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    id=FreightsId
     click element    id=FreightsId
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="FreightsId"]/option[2]    #选择通用模版测试运费
-    sleep    1
+    #sleep    1
     click element    id=Freights    #确认
-    sleep    5
+    #sleep    5
     input text    id=ProductName    ${全局关键字}多规格商品    #以商品名查询
     click button    id=btnSearch    #执行查询
-    sleep    2
+    #sleep    2
     ${数量}    get text    xpath=//*[@id="list"]/tbody/tr/td[5]/div    #获取商品库存
     ${商品价格}    get text    xpath=//*[@id="list"]/tbody/tr/td[4]/div/p[2]/span    #获取商品价格
     click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
-    sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到商品详情页
-    sleep    1
+    #sleep    2
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到商品详情页
+    #sleep    1
     click element    xpath=//*[@id="btnAddToBuy"]/p    #点击立即购买
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    xpath=//*[@id="selectSkuBox"]/div/div/a
     click element    xpath=//*[@id="selectSkuBox"]/div/div/a    #选择规格1
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="selectSkuBox"]/div[2]/div/a    #选择套餐1
-    sleep    1
+    #sleep    1
+    Wait Until Element Is Visible    id=btnBuyNow    #######修改点
     click button    id=btnBuyNow    #确定购买
-    sleep    2
+    #sleep    2
     会员登录    @{会员帐号}[0]
-    sleep    2
+    #sleep    2
     ${运费}    get text    xpath=//*[@class="amount clearfix"]/p[5]/span/span    #获取运费
     should contain    ${运费}    1.00    #验证提交订单运费
     log    订单提交页运费正确
@@ -147,378 +155,395 @@ Library           DateTime
     ${c}    Set variable    ${${a}+${b}}
     should be equal as integers    ${c}    ${d}
     log    订单价格计算正确（商品价格+运费）
-    sleep    2
+    sleep    3    #######修改点
     click element    id=submit    #点击提交订单
-    sleep    2
+    #sleep    2
     click element    id=link-offlinepay    #选择线下支付
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="order-lists"]/span[2]    #查看已成交订单
-    sleep    2
+    #sleep    2
     ${会员订单列表总价}    get text    xpath=//*[@id="orderList"]/section[1]/div[3]/p/span    #获取订单实付价格
     should contain    ${会员订单列表总价}    ${提交订单页订单价格}    #验证订单价格与实付价格一致，确定包邮
-    sleep    2
-    select window    ${titles[0]}    #跳转到后台
-    sleep    2
+    #sleep    2
+    select window    ${wc[0]}    #跳转到后台
+    #sleep    2
     click link    link=订单    #点击订单模块
-    sleep    2
-    ${后台订单列表订单总价}    get text    xpath= //*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/p/strong    #获取后台订单实付价格
+    #sleep    2
+    ${后台订单列表订单总价}    get text    ${获取后台订单实付价格}    #获取后台订单实付价格
     should contain    ${后台订单列表订单总价}    ${会员订单列表总价}    #验证订单价格与实付价格一致，确定包邮
     click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #点击确认收款
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    id=popbtn-cnfgoon    #######修改点
     click button    id=popbtn-cnfgoon    #确认收款
-    sleep    2
-    ${后台订单状态}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[1]/p[1]    #获取后台订单状态
+    sleep    2    #######修改点
+    ${后台订单状态}    get text    ${获取后台订单状态}    #获取后台订单状态
     should contain    ${后台订单状态}    待发货    #验证后台发货状态
     click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
-    sleep    1
+    #sleep    1
     select from list by value    id=controlExpress    YD,韵达快递    #选择快递
     input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
-    sleep    1
+    #sleep    1
     click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
-    sleep    1
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到前台
-    sleep    1
+    #sleep    1
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到前台
+    #sleep    1
     click element    xpath=//*[@id="muitable"]/a[1]/p    #刷新订单列表数据
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="orderList"]/section/div[4]/a    #确认收货
-    sleep    1
+    #sleep    1
     click element    xpath=/html/body/div[6]/div[2]/span[2]    #再次确认收货
-    sleep    1
+    sleep    1    #######修改点
     click element    xpath=/html/body/div[6]/div[2]/span[1]    #取消评论
-    sleep    1
+    #sleep    1
     ${会员订单列表订单状态}    get text    xpath=//*[@id="orderList"]/section[1]/div[1]/span/label    #获取会员订单列表订单状态
     should contain    ${会员订单列表订单状态}    交易成功    #验证会员订单列表订单状态正确
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
-    sleep    2
-    会员退出切回后台    ${titles}
+    #sleep    2
+    会员退出切回后台    ${wc}
     click link    link=订单    #点击订单模块
-    sleep    2
-    ${后台订单列表订单状态}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[1]/p[1]    #获取后台订单状态
+    #sleep    2
+    ${后台订单列表订单状态}    get text    ${获取后台订单状态}    #获取后台订单状态
     should contain    ${后台订单列表订单状态}    交易成功    #验证后台订单列表订单状态正确
     click link    link=商品    #点击商品模块进入商品模块
-    sleep    2
+    #sleep    2
     input text    id=ProductName    ${全局关键字}多规格商品    #以商品名查询
     click button    id=btnSearch    #执行查询
-    sleep    2
+    #sleep    2
     ${数量2}    get text    xpath=//*[@id="list"]/tbody/tr/td[5]/div    #获取商品库存
     log    ${数量2}
     should be equal as integers    ${${数量}-${数量2}}    1
     log    库存减扣正确
     log    邮费订单测试通过
-    sleep    2
+    #sleep    2
     click link    link=首页    #进入首页模块
-    sleep    2
+    #sleep    2
 
 一单多件商品
     click link    link=商品    #点击商品模块进入商品模块
-    sleep    2
+    #sleep    2
+    Wait Until page contains    原价    #######修改点
     click element    id=sells    #全选商品
-    sleep    1
+    #sleep    1
     click button    id=btn-nopostage    #设置包邮
-    sleep    5
+    #sleep    5
     input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
     click button    id=btnSearch    #执行查询
-    sleep    2
+    #sleep    2
     ${库存0}    get text    xpath=//*[@id="list"]/tbody/tr/td[5]/div    #获取商品库存
     log    ${库存0}
     ${商品现价}    get text    xpath=//*[@id="list"]/tbody/tr/td[4]/div/p[2]/span    #获取商品价格
     log    ${商品现价}
     click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
-    sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到前台
-    sleep    2
+    #sleep    2
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到前台
+    #sleep    2
     click element    xpath=//*[@id="btnAddToBuy"]/p    #点击立即购买
-    sleep    1
+    #sleep    1
+    Wait Until Element Is Visible    id=btnNumber
     click button    id=btnNumber    #新增第一件商品
-    sleep    1
+    #sleep    1
     click button    id=btnNumber    #新增第二件商品
-    sleep    1
+    #sleep    1
     click button    id=btnNumber    #新增第三件商品
-    sleep    1
+    #sleep    1
     click button    id=btnNumber    #新增第四件商品
     log    一共购买五件商品
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    id=btnBuyNow    #######修改点
     click button    id=btnBuyNow    #确定购买
-    sleep    2
+    #sleep    2
     会员登录    @{会员帐号}[0]
-    sleep    3
+    #sleep    3
     ${提交订单页订单价格}    get text    id=SumPrice_all    #获取订单页订单价格
     ${a}    evaluate    ${商品现价}
     ${b}    evaluate    ${提交订单页订单价格}
     ${c}    set variable    ${${a}*5}
     should be equal as integers    ${b}    ${c}
     log    订单提交页价格计算正确
-    sleep    2
+    sleep    3    #######修改点
     click element    id=submit    #点击提交订单
-    sleep    2
+    #sleep    2
     click element    id=link-offlinepay    #选择线下支付
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="order-lists"]/span[2]    #查看已成交订单
-    sleep    2
+    #sleep    2
     ${实付价格}    get text    xpath=//*[@id="orderList"]/section[1]/div[3]/p/span    #获取会员中心订单实付价格
     ${e}    Should Match Regexp    ${实付价格}    \\d+    #正则去除￥
     should be equal as integers    ${c}    ${e}    #验证订单价格与实付价格一致，确定包邮
-    sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[0]}    #跳转到后台
-    sleep    2
+    #sleep    2
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[0]}    #跳转到后台
+    #sleep    2
     click link    link=订单    #点击订单模块
-    sleep    2
-    ${后台订单实付价格}    get text    xpath= //*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/p/strong    #获取后台订单实付价格
+    #sleep    2
+    ${后台订单实付价格}    get text    ${获取后台订单实付价格}    #获取后台订单实付价格
     ${f}    Should Match Regexp    ${后台订单实付价格}    \\d+    #正则去除￥
     should be equal as integers    ${c}    ${f}    #验证订单价格与实付价格一致，确定包邮
     click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #点击确认收款
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    id=popbtn-cnfgoon    #######修改点
     click button    id=popbtn-cnfgoon    #确认收款
-    sleep    2
-    ${后台订单状态}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[1]/p[1]    #获取后台订单状态
+    sleep    2    #######修改点
+    ${后台订单状态}    get text    ${获取后台订单状态}    #获取后台订单状态
     should contain    ${后台订单状态}    待发货    #验证后台发货状态
     click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
-    sleep    1
+    #sleep    1
     select from list by value    id=controlExpress    YD,韵达快递    #选择快递
     input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
-    sleep    1
+    #sleep    1
     click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
-    sleep    1
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到前台
-    sleep    1
+    #sleep    1
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到前台
+    #sleep    1
     click element    xpath=//*[@id="muitable"]/a[1]/p    #刷新订单列表数据
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="orderList"]/section/div[4]/a    #确认收货
-    sleep    1
+    #sleep    1
     click element    xpath=/html/body/div[6]/div[2]/span[2]    #再次确认收货
-    sleep    1
+    sleep    1    #######修改点
     click element    xpath=//html/body/div[6]/div[2]/span[1]    #取消评论
-    sleep    1
+    #sleep    1
     ${会员订单列表订单状态}    get text    xpath=//*[@id="orderList"]/section[1]/div[1]/span/label    #获取会员订单列表订单状态
     should contain    ${会员订单列表订单状态}    交易成功    #验证会员订单列表订单状态正确
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
-    sleep    2
-    会员退出切回后台    ${titles}
-    sleep    2
+    #sleep    2
+    会员退出切回后台    ${wc}
+    #sleep    2
     click link    link=订单    #点击订单模块
-    sleep    2
-    ${后台订单列表订单状态}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[1]/p[1]    #获取后台订单状态
+    #sleep    2
+    ${后台订单列表订单状态}    get text    ${获取后台订单状态}    #获取后台订单状态
     should contain    ${后台订单列表订单状态}    交易成功    #验证后台订单列表订单状态正确
     click link    link=商品    #点击商品模块进入商品模块
-    sleep    2
+    #sleep    2
     input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
     click button    id=btnSearch    #执行查询
-    sleep    2
+    #sleep    2
     ${库存1}    get text    xpath=//*[@id="list"]/tbody/tr/td[5]/div    #获取商品库存
     log    ${库存1}
     should be equal as integers    ${${库存0}-${库存1}}    5
     log    库存减扣正确
     log    一单多件商品测试通过
-    sleep    2
+    #sleep    2
     click link    link=首页    #进入首页模块
-    sleep    2
+    #sleep    2
 
 改价
     click link    link=商品    #点击商品模块进入商品模块
-    sleep    2
+    #sleep    2
+    Wait Until page contains    原价    #######修改点
     click element    id=sells    #全选商品
-    sleep    1
+    #sleep    1
     click button    id=btn-nopostage    #设置包邮
-    sleep    5
+    #sleep    5
     input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
     click button    id=btnSearch    #执行查询
-    sleep    2
+    #sleep    2
     ${商品现价}    get text    xpath=//*[@id="list"]/tbody/tr/td[4]/div/p[2]/span    #获取商品价格
     log    ${商品现价}
     click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
-    sleep    2
+    #sleep    2
     切换到前台
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="btnAddToBuy"]/p    #点击立即购买
-    sleep    1
+    #sleep    1
+    Wait Until Element Is Visible    id=btnBuyNow    #######修改点
     click button    id=btnBuyNow    #确定购买
-    sleep    2
+    #sleep    2
     会员登录    @{会员帐号}[0]
-    sleep    5
+    sleep    3    #######修改点
     click element    id=submit    #点击提交订单
-    sleep    2
+    #sleep    2
     click element    id=link-offlinepay    #选择线下支付
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
-    sleep    2
+    #sleep    2
     切换到后台
-    sleep    1
+    #sleep    1
     click link    link=订单    #进入订单模块
-    sleep    2
+    #sleep    2
     click element    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input    #点击一键改价
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    xpath=//*[@id="tbShow"]/tbody/tr/td[4]/input[4]
     clear element text    xpath=//*[@id="tbShow"]/tbody/tr/td[4]/input[4]    #清空改价栏
     input text    xpath=//*[@id="tbShow"]/tbody/tr/td[4]/input[4]    -10    #改价减10元
+    Wait Until Element Is enabled    xpath=//*[@id="tbShow"]/tbody/tr/td[6]/p[2]/input[3]
     clear element text    xpath=//*[@id="tbShow"]/tbody/tr/td[6]/p[2]/input[3]    #清空邮费栏
     input text    xpath=//*[@id="tbShow"]/tbody/tr/td[6]/p[2]/input[3]    1    #修改邮费加1
     log    改价减10，加邮费1
-    sleep    1
+    #sleep    1
     click button    id=btnConfirm    #确认修改
-    sleep    5
-    ${修改后的总价}    get text    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td/p/strong    #获取修改后订单列表中的订单价格
+    click element    xpath=//div[@id="modalEditPrice"]//span[contains(text(),"×")]
+    sleep    2
+    ${修改后的总价}    get text    ${获取后台订单实付价格}    #获取修改后订单列表中的订单价格
     ${改1}    Should Match Regexp    ${修改后的总价}    \\d+    #正则去除￥
     log    ${商品现价}
     log    ${改1}
     should be equal as integers    ${${商品现价}-${改1}}    9
     log    后台验证修改价格计算正确
-    sleep    2
+    #sleep    2
     切换到前台
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="order-lists"]/span[2]    #查看已成交订单
-    sleep    2
+    #sleep    2
     ${实付价格}    get text    xpath=//*[@id="orderList"]/section[1]/div[3]/p/span    #获取会员中心订单实付价格
     ${实1}    Should Match Regexp    ${实付价格}    \\d+    #正则去除￥
     log    ${实1}
     log    ${改1}
     should be equal as integers    ${改1}    ${实1}    #验证订单价格与实付价格一致，确定包邮
     log    前台验证修改价格计算正确
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
-    sleep    2
+    #sleep    2
     会员退出且切换到后台
-    sleep    2
+    #sleep    2
     log    改价测试通过
-    sleep    1
+    #sleep    1
     click link    link=首页    #进入首页模块
-    sleep    1
+    #sleep    1
 
 退款退款（退余额）
     click link    link=商品    #点击商品模块进入商品模块
-    sleep    2
+    #sleep    2
+    Wait Until page contains    原价    #######修改点
     click element    id=sells    #全选商品
-    sleep    1
+    #sleep    1
     click button    id=btn-nopostage    #设置包邮
-    sleep    5
+    #sleep    5
     input text    id=ProductName    ${全局关键字}单规格商品    #以商品名查询
     click button    id=btnSearch    #执行查询
-    sleep    2
+    #sleep    2
     ${商品现价}    get text    xpath=//*[@id="list"]/tbody/tr/td[4]/div/p[2]/span    #获取商品价格
     log    ${商品现价}
     click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
-    sleep    2
+    #sleep    2
     切换到前台
-    sleep    2
+    #sleep    2
     click element    id=btnAddToBuy    #点击立即购买
-    sleep    1
+    #sleep    1
+    Wait Until Element Is Visible    id=btnBuyNow    #######修改点
     click button    id=btnBuyNow    #确定购买
-    sleep    2
+    #sleep    2
     会员登录    @{会员帐号}[0]
-    sleep    5
+    sleep    3
     click element    id=submit    #点击提交订单
-    sleep    2
+    #sleep    2
     click element    id=link-offlinepay    #选择线下支付
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #返回会员中心
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="sct-mark"]/div[2]/a/p[2]    #点击查看余额
-    sleep    2
+    #sleep    2
     ${退款前余额}    get text    xpath=/html/body/div[1]/div[1]/div/p[2]/span    #获取退款前余额
     #${退前余}    Should Match Regexp    ${退款前余额}    \\d+    #正则去除￥
     log    ${退款前余额}
-    sleep    2
+    #sleep    2
     切换到后台
-    sleep    1
+    #sleep    1
     click link    link=订单    #进入订单模块
-    sleep    2
+    #sleep    2
     click element    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[2]    #点击确认付款
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    id=popbtn-cnfgoon    #######修改点
     click button    id=popbtn-cnfgoon    #确认收款
-    sleep    2
+    sleep    1
     切换到前台
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="order-lists"]/span[2]    #查看已成交订单
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="orderList"]/section/div[2]/ul/li/a/div/p[2]    #点击已经付款的订单
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="div-container"]/div[3]/div[2]/ul/li/div/div/p[3]/a/span    #申请退款
-    sleep    2
+    #sleep    2
     click element    id=choiceBank    #选择退款方式
     sleep    1
     click element    xpath=//*[@id="paymentTypelist"]/li[2]    #选择退回余额
-    sleep    2
+    #sleep    2
     input text    id=txtReason    退款退款（退余额）    #输入退款说明
-    sleep    1
+    #sleep    1
+    Wait Until Element Is enabled    id=btnConfirm
     click button    id=btnConfirm    #提交退款申请
-    sleep    3
+    #sleep    3
     click element    xpath=/html/body/div[7]/div[2]/span    #确认提交
-    sleep    2
+    #sleep    2
     切换到后台
-    sleep    2
+    #sleep    2
     click link    link=订单    #切换到订单页
-    sleep    2
+    #sleep    2
     click element    id=stnav-84    #切换到售后订单
-    sleep    2
-    click element    xpath = //table[@class='table allmiddle']/tbody/tr/td/table/tbody/tr/td[5]/span/a    #点击退款审批
-    sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[2]}    #切换到退款详情页
-    sleep    1
+    #sleep    2
+    click element    xpath = //table[@class='table allmiddle']/tbody/tr/td/table/tbody/tr/td[4]/a    #点击退款审批
+    #sleep    2
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[2]}    #切换到退款详情页
+    #sleep    1
     click button    id=btnAgree    #售后审批
-    sleep    2
+    #sleep    2
+    Wait Until Element Is Visible    id=txtAdminRemark
     input text    id=txtAdminRemark    后台审批退款    #后台输入退款备注
-    sleep    1
+    #sleep    1
     click button    id=btnAgreeConfirm    #确认审批
-    sleep    3
+    click element    xpath=//*[@id="AgreeFrom"]/div[1]/button/span
+    #sleep    3
     close window
     切换到后台
-    sleep    2
+    #sleep    2
     click element    id=stnav-620    #切换到售后退款页
-    sleep    2
+    #sleep    2
     click element    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[8]/input    #点击发放
-    sleep    1
+    #sleep    1
+    Wait Until Element Is Visible    id=popbtn-cnfgoon
     click button    id=popbtn-cnfgoon    #确认发放
     sleep    1
     click element    id=stnav-76    #切换到所有订单页
-    sleep    2
+    #sleep    2
     ${退款后订单列表订单状态}    get text    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[5]/small    #获取退款后订单状态
     should contain    ${退款后订单列表订单状态}    已退款    #验证订单状态
     log    后台订单状态验证成功，已退款
     切换到前台
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="sct-mark"]/div[2]/a/p[2]    #点击查看余额
-    sleep    2
+    #sleep    2
     ${退款后余额}    get text    xpath=/html/body/div[1]/div[1]/div/p[2]/span    #获取退款前余额
     log    ${商品现价}
     log    ${退款前余额}
     log    ${退款后余额}
     should be equal as integers    ${${退款后余额}-${退款前余额}}    ${商品现价}
-    sleep    1
+    #sleep    1
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
-    sleep    2
+    #sleep    2
     click element    xpath=//*[@id="order-lists"]/span[2]    #查看订单
-    sleep    2
+    #sleep    2
     ${会员订单列表订单状态}    get text    xpath=//*[@id="orderList"]/section[1]/div[2]/ul/li/a/div/div/p[2]/span    #获取退款后会员订单状态
     should contain    ${会员订单列表订单状态}    已退款    #验证退款后会员订单状态
     log    前台台订单状态验证成功，已退款
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
-    sleep    2
+    #sleep    2
     会员退出且切换到后台
-    sleep    2
+    #sleep    2
     log    退款退款（退余额）测试通过
-    sleep    1
+    #sleep    1
     click link    link=首页    #进入首页模块
-    sleep    1
+    #sleep    1
 
 退货（退指定账户）
     #创建退货物流地址
     创建退货物流地址
     sleep    3
     #开启提现线下支付
-    click link    link=设置
+    click link    link=系统
     sleep    2
     click element    id=stnav-181    #点击提现设置
     sleep    2
@@ -566,7 +591,7 @@ Library           DateTime
     click button    id=popbtn-cnfgoon    #确认收款
     sleep    2
     click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[5]    #点击发货
-    sleep    1
+    sleep    3
     select from list by value    id=controlExpress    YD,韵达快递    #选择快递
     input text    xpath=//*[@id="div-batdeliverEdit"]/table/tbody/tr/td[4]/input    1234567890    #输入快递单号
     sleep    1
@@ -600,8 +625,8 @@ Library           DateTime
     click element    id=stnav-84    #切换到售后订单
     sleep    2
     click element    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/a    #点击退款审批
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[2]}    #切换到退款详情页
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[2]}    #切换到退款详情页
     sleep    1
     click button    id=btnAgree    #售后审批
     sleep    2
@@ -642,8 +667,8 @@ Library           DateTime
     click element    id=stnav-84    #切换到售后订单
     sleep    2
     click element    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/a    #点击退款审批
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[2]}    #切换到退款详情页
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[2]}    #切换到退款详情页
     sleep    1
     click button    xpath=//*[@id="home"]/div[2]/table[4]/tbody/tr/td[4]/p/input    #点击确认收到退货
     sleep    2
@@ -696,16 +721,16 @@ Library           DateTime
     log    ${url}
     click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击商品跳转前台
     sleep    1
-    ${titles}    Get Window Titles    #获取当前浏览器所有标题
-    log    ${titles}
+    ${wc}    list windows    #获取当前浏览器所有标题
+    log    ${wc}
     log    文字
-    select window    ${titles[1]}    #切换至句柄1
+    select window    ${wc[1]}    #切换至句柄1
     sleep    1
     click element    xpath=//*[@id="btnAddToCart"]/p    #加入购物车
     sleep    1
     click element    xpath=//*[@id="btnBuyNow"]    #确认
     sleep    2
-    click element    xpath=/html/body/div[19]/div[2]/span    #确认登录信息
+    click element    xpath=//div[@class="mui-popup-buttons"]//span[contains(text(),"确定")]    #确认登录信息
     sleep    2
     会员登录    @{会员帐号}[0]
     sleep    3
@@ -729,7 +754,7 @@ Library           DateTime
     sleep    1
     click element    xpath=id('ul')/li[4]/div/a    #点击会员中心
     sleep    1
-    会员退出切回后台    ${titles}
+    会员退出切回后台    ${wc}
 
 商品评论
     [Documentation]    Author：蒋达为
@@ -742,8 +767,8 @@ Library           DateTime
     ${url}    Get Element Attribute    xpath=//table[@id='list']/tbody/tr[1]/td[3]/div/div/div[2]/p[1]/a@href    #获取商品详情地址
     click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击商品跳转前台
     sleep    1
-    ${titles}    Get Window Titles    #获取当前浏览器所有标题
-    select window    ${titles[1]}    #切换至句柄1
+    ${wc}    list windows    #获取当前浏览器所有标题
+    select window    ${wc[1]}    #切换至句柄1
     sleep    1
     click element    xpath=//*[@id="goto-shopcart"]    #点击购物车
     sleep    2
@@ -764,7 +789,7 @@ Library           DateTime
     click element    xpath=//*[@id="wait-handle"]/a[1]/div/p[2]    #待付款
     sleep    2
     ${order}    Get Element Attribute    xpath=//div[1]/div/section[1]/div[1]/div/label/input@value
-    select window    ${titles[0]}    #切换至句柄1
+    select window    ${wc[0]}    #切换至句柄1
     click element    id=hnav-10    #点击订单
     input text    id=input-ordernum    ${order}    #根据订单号查询
     click element    id=btn-query    #点击查询
@@ -780,8 +805,8 @@ Library           DateTime
     sleep    1
     click button    xpath = //*[@id="Deliverd"]/div/div/div[3]/input[1]    #确定发货
     sleep    1
-    ${titles}    Get Window Titles    #获取当前浏览器所有标题
-    select window    ${titles[1]}    #跳转到前台
+    ${wc}    list windows    #获取当前浏览器所有标题
+    select window    ${wc[1]}    #跳转到前台
     sleep    1
     click element    xpath=//*[@id="muitable"]/a[1]/p    #刷新订单列表数据
     sleep    1
@@ -790,7 +815,7 @@ Library           DateTime
     click element    xpath=/html/body/div[6]/div[2]/span[2]    #再次确认收货
     sleep    1
     click element    xpath=/html/body/div[6]/div[2]/span[2]    #确认评论
-    sleep    1
+    sleep    3
     click element    xpath=//ul/div[1]/li/a[@id='comment']    #晒单评价
     click element    xpath=//span[@id='star1']/img[2]    #两颗星评价
     input text    id=ReviewText    ${全局关键字}会员评论
@@ -820,13 +845,13 @@ Library           DateTime
     should contain    ${text2}    差
     click element    xpath=id('ul')/li[4]/div/a    #点击会员中心
     sleep    1
-    会员退出切回后台    ${titles}
+    会员退出切回后台    ${wc}
     sleep    2
     #后台检查评论
     click element    link=商品    #点击商品
     click element    link=客户评价
     sleep    2
-    ${后台评论信息}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div[3]/div/div[2]/div/div/table/tbody/tr/td[4]/div[2]    #获取第一条评论
+    ${后台评论信息}    get text    xpath=//tr[1]/td[4]/div[2]    #获取第一条评论
     should contain    ${后台评论信息}    ${全局关键字}会员评论
     #删除评论
     sleep    1
@@ -836,13 +861,3 @@ Library           DateTime
     sleep    2
     ${text3}    get text    xpath=/html/body/div[6]/p
     should contain    ${text3}    删除成功
-
-test
-    click link    link=商品    #点击商品模块进入商品模块
-    sleep    4
-    click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
-    sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到商品详情页
-    select window    ${titles[0]}
-    click link    link=订单    #点击商品模块进入商品模块

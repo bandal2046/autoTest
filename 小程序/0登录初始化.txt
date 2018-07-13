@@ -1,0 +1,39 @@
+*** Settings ***
+Library           Selenium2Library    run_on_failure=Selenium2Library.Capture Page Screenshot
+Library           Screenshot
+Library           AutoItLibrary
+Library           AppiumLibrary    run_on_failure=AppiumLibrary.Capture Page Screenshot
+Library           DateTime
+Resource          小程序/keys.txt
+
+*** Test Cases ***
+登录小程序
+    #打开小程序
+    Comment    open application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=4.4.2    deviceName=127.0.0.1:62001    appPackage=com.tencent.mm
+    ...    appActivity=.ui.LauncherUI
+    open application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=7.1.2    deviceName=e9baf83c0005    appPackage=com.tencent.mm    appActivity=.ui.LauncherUI
+    Comment    open application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=4.4.2    deviceName=040ACG7L6DJL    appPackage=com.tencent.mm
+    ...    appActivity=.ui.LauncherUI
+    Comment    open application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=7.0    deviceName=76f0ce240903    appPackage=com.tencent.mm
+    ...    appActivity=.ui.LauncherUI
+    Comment    open application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=7.0    deviceName=76f0ce240903    appPackage=com.android.calculator2
+    ...    appActivity=.Calculator
+    Comment    open application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=5.1    deviceName=AVY9KA3660109963    appPackage=com.tencent.mm
+    ...    appActivity=.ui.LauncherUI
+    sleep    10
+    Comment    click a point    678    1828    duration=1000
+    Comment    AppiumLibrary.click element    xpath=//android.widget.TextView[@text="发现"]    #进入发现
+    AppiumLibrary.click element    xpath=//*[@text='发现']
+    sleep    2
+    AppiumLibrary.click element    xpath=//*[@text='小程序']    #进入小程序
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text=\"${小程序}\"]    #进入目标小程序（到keys内配置访问目标小程序）
+    sleep    8
+
+登录微商城后台
+    open browser    https://my.xiaokeduo.com    chrome    #打开浏览器
+    sleep    2
+    Selenium2Library.input text    xpath=//*[@id="Telphone"]    18866668888    #输入登录帐号
+    Selenium2Library.input text    xpath=//*[@id="Password"]    123456    #输入登录密码
+    Selenium2Library.click button    xpath=/html/body/div/form/div[2]/div[2]/div[4]/input    #点击登录按钮
+    Maximize Browser Window

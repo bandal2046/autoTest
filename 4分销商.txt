@@ -1,5 +1,5 @@
 *** Settings ***
-Library           Selenium2Library
+Library           Selenium2Library    implicit_wait=10
 Library           Screenshot
 Resource          资源库/Variables.txt
 Resource          资源库/keyword.txt
@@ -112,7 +112,7 @@ Library           DateTime
     sleep    3
     click element    id=chkbox-allslt
     sleep    1
-    click button    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div[1]/div[2]/div[1]/div/div[2]/div[1]/div/button
+    click button    xpath=//body/div/div/div/div[1]/div[2]/div[1]/div/div[2]/div[1]/div/button    #批量设置分类
     sleep    2
     page should contain    ${全局关键字}店铺分类
     log    新建店铺分类在商品归类页存在
@@ -208,8 +208,8 @@ Library           DateTime
     sleep    2
     click element    xpath=//*[@id="list"]/tbody/tr/td[3]/div/div/div[2]/p/a    #点击第一个商品链接
     sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到商品详情页
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到商品详情页
     sleep    1
     click element    xpath=//*[@id="btnAddToBuy"]/p    #点击立即购买
     sleep    2
@@ -232,8 +232,8 @@ Library           DateTime
     sleep    3
     click element    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[4]/a    #查看订单详情
     sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[2]}    #切换到订单详情
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[2]}    #切换到订单详情
     ${获取订单分佣}    get text    xpath=//*[@id="div-commissioninfo"]/div/div/p/i
     ${获取订单分佣去符号}    Should Match Regexp    ${获取订单分佣}    \\d+    #正则去除￥
     log    ${获取订单分佣去符号}
@@ -263,8 +263,8 @@ Library           DateTime
     sleep    3
     click element    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[4]/a    #查看订单详情
     sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[2]}    #切换到订单详情
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[2]}    #切换到订单详情
     ${获取修改后订单分佣}    get text    xpath=//*[@id="div-commissioninfo"]/div/div/p/i
     ${获取修改后订单分佣去符号}    Should Match Regexp    ${获取修改后订单分佣}    \\d+    #正则去除￥
     log    ${获取修改后订单分佣去符号}
@@ -425,7 +425,7 @@ Library           DateTime
     click element    xpath=/html/body/div[1]/div[1]/div[1]/div[2]/a    #分销商中心
     sleep    1
     click element    xpath=/html/body/div[1]/div[4]/ul/li/div[2]/a[2]/div/p[1]    #下一级分店
-    sleep    2
+    sleep    5
     page should contain    @{分销商帐号}[0]
     log    上级分销商下级分店数据校验成功
     click element    xpath=//*[@id="ul"]/li[4]/div/a    #会员中心
@@ -659,8 +659,8 @@ Library           DateTime
     sleep    3
     click element    xpath = //table[@class='table alltextcenter allmiddle']/tbody/tr/td[4]/a    #查看订单详情
     sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #切换到订单详情
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #切换到订单详情
     ${获取订单分佣}    get text    xpath=//*[@id="div-commissioninfo"]/div/div/p/i
     ${获取订单分佣去符号}    Should Match Regexp    ${获取订单分佣}    \\d+    #正则去除￥
     log    ${获取订单分佣去符号}
@@ -780,4 +780,4 @@ Library           DateTime
     sleep    1
     ${c}    Run Keyword And Return Status    Page Should Contain    测试分销等级
     run keyword if    ${c} !=${TRUE}    log    等级不存在，不需要删除
-    ...    ELSE    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/table/tbody/tr[2]/td[7]/a[2]    #删除
+    ...    ELSE    click element    xpath=//tr[2]/td[7]/a[2]    #删除

@@ -1,0 +1,2 @@
+*** Variables ***
+${商品详情页点击立即购买}    xpath=//android.view.View[@content-desc=\"立即购买\"]

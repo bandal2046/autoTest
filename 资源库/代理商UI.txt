@@ -14,9 +14,9 @@ ${采购上级选择}         //*[@id="div-purchasefrom"]/label[1]/select    # �
 ${代理折扣}           //*[@id="firstDiscount"]
 @{代理商层级}          //*[@id="div-agentrulesetting"]/div[2]/div/label[1]    //*[@id="div-agentrulesetting"]/div[2]/div/label[2]/input    //*[@id="div-agentrulesetting"]/div[2]/div/label[3]    # 不允许发展下级代理/允许发展二级代理/允许发展二级代理、三级代理
 ${区域模式}           //*[@id="IsOpenArea"]
-${选择区域代理:上海}      //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div/div[1]/div/ul/li[2]/div/div    # 选择区域代理:上海
-${区域模式：添加}        //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div/button    # 添加地区
-${区域模式：确认}        //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[3]/button[1]    # 确认选择的区域
+${选择区域代理:上海}      //div/div[1]/div/ul/li[2]/div/div    # 选择区域代理:上海
+${区域模式：添加}        //div[2]/div[2]/div/button    # 添加地区
+${区域模式：确认}        //div[2]/div[2]/div[3]/button[1]    # 确认选择的区域
 ${区域保护}           //*[@id="IsAreaProtect"]
 ${联系人}            //*[@id="div-agentcontactinfo"]/div[1]/div/input
 ${联系号码}           //*[@id="div-agentcontactinfo"]/div[2]/div/input
@@ -24,10 +24,10 @@ ${所在地区：省}         id=province    # 下拉选择省
 ${所在地区：市}         id=city    # 下拉选择市
 ${所在地区：县}         id=county    # 下拉选择县
 ${保存}             //*[@id="div-actions"]/button
-${区域保护：上海}        //*[@id="allcontent"]/div/div[1]/div[2]/div/div[3]/div/div[2]/div[2]/div/div[1]/div/ul/li[1]/div/div
+${区域保护：上海}        //div[3]/div/div[2]/div[2]/div/div/div/ul/li/div/div
 ${详细地址}           //*[@id="div-agentcontactinfo"]/div[4]/div/input
-${区域保护：添加}        //*[@id="allcontent"]/div/div[1]/div[2]/div/div[3]/div/div[2]/div[2]/div/button
-${区域保护：确认}        //*[@id="allcontent"]/div/div[1]/div[2]/div/div[3]/div/div[2]/div[3]/button[1]
+${区域保护：添加}        //div[3]/div/div[2]/div[2]/div/button
+${区域保护：确认}        //div[3]/div/div[2]/div[3]/button
 ${代理商列表}          //*[@id="stnav-390"]
 ${搜索:代理商名}        //*[@id="input-agentname"]
 ${搜索:手机号}         //*[@id="input-phonenum"]
@@ -35,12 +35,12 @@ ${搜索}             id=btn_Search
 ${输入一级代理商名称}      //*[@id="input-l1agentname"]
 ${选择一级:第一行}       //div/div[2]/ol/div/ul/li[1]/span
 ${添加代理区域}         //*[@id="btn-addagentarea"]
-${展开省区}           //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div/div[1]/div/ul/li[1]/div/div/div[1]
-${选中省第一行}         //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div/div[1]/div/ul/li[1]/ul/li[1]/div/div
+${展开省区}           //div/div[1]/div/ul/li[1]/div/div/div[1]
+${选中省第一行}         //div/div[1]/div/ul/li[1]/ul/li[1]/div/div
 ${二级代理商折扣}        //*[@id="secondDiscount"]
 ${输入二级代理商名称}      //*[@id="input-l2agentname"]
 ${选择二级：第一行}       //div/div[2]/ol/div[2]/ul/li[1]/span
 ${三级代理商折扣}        //*[@id="thirdDiscount"]
-${展开市区}           //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div/div[1]/div/ul/li[1]/ul/li/div/div/div[1]
-${选中市第一行}         //*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div[2]/div/div[1]/div/ul/li[1]/ul/li/ul/li[1]/div/div
+${展开市区}           //div/div[1]/div/ul/li[1]/ul/li/div/div/div[1]
+${选中市第一行}         //div/div[1]/div/ul/li[1]/ul/li/ul/li[1]/div/div
 ${代理商查询}          id=btn-search

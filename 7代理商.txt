@@ -1,5 +1,5 @@
 *** Settings ***
-Library           Selenium2Library
+Library           Selenium2Library    implicit_wait=10
 Library           AutoItLibrary
 Library           Screenshot
 Resource          资源库/keyword.txt
@@ -26,7 +26,7 @@ Resource          资源库/代理商UI.txt
     click element    ${区域模式：添加}
     click element    ${区域模式：确认}
     click element    ${区域保护}
-    sleep    2
+    sleep    3
     click element    ${区域保护：上海}
     click element    ${区域保护：添加}
     click element    ${区域保护：确认}

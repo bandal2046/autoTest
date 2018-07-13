@@ -1,7 +1,7 @@
 *** Settings ***
 Library           Screenshot
 Library           AutoItLibrary
-Library           Selenium2Library
+Library           Selenium2Library    implicit_wait=10
 Library           DateTime
 Resource          资源库/keyword.txt
 Resource          资源库/Variables.txt
@@ -14,7 +14,7 @@ Resource          资源库/Variables.txt
     sleep    2
     click link    id=stnav-598    #营销中心
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[1]    #优惠券管理
+    click link    link=优惠券管理    #优惠券管理
     wait until page contains element    id=addCoupon    2
     click link    id=addCoupon    #新增优惠券
     sleep    2
@@ -60,7 +60,7 @@ Resource          资源库/Variables.txt
     sleep    2
     click link    id=stnav-598    #营销中心
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[2]/span    #注册送优惠券
+    click link    link=注册送优惠券    #注册送优惠券
     sleep    2
     click element    xpath=//*[@id="mySwitch"]/div/label    #开启注册送优惠券
     sleep    2
@@ -108,7 +108,7 @@ Resource          资源库/Variables.txt
     sleep    2
     click link    id=stnav-598
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[2]/span
+    click link    link=注册送优惠券
     sleep    2
     click element    xpath=//*[@id="mySwitch"]/div/label    #关闭注册送优惠券
     sleep    2
@@ -121,7 +121,7 @@ Resource          资源库/Variables.txt
     sleep    2
     click link    id=stnav-598
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[3]
+    click link    link=手动发放优惠券
     sleep    2
     select from list by label    id=ddlCouponList    ${全局关键字}优惠券
     click element    id=SendUserName
@@ -293,14 +293,14 @@ Resource          资源库/Variables.txt
     click link    id=stnav-76
     sleep    1
     input text    id=input-prodname    单规格
-    click element    id=btn-query
+    click element    id=btn-query    #查询
     sleep    1
-    ${Htotalmoney}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[1]/p/strong
+    ${Htotalmoney}    get text    xpath=//tbody/tr/td[2]/table/tbody/tr/td[1]/p/strong
     ${去符号}    Should Match Regexp    ${Htotalmoney}    \\d+    #正则去除￥
     #${转化去符号}    Evaluate    int(${去符号})
     #should contain    ${转化去符号}    ${优惠后的价格}
     should be equal as integers    ${去符号}    ${优惠后的价格}
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[4]/a[1]    #查看详情
+    click link    xpath=//tbody/tr/td[2]/table/tbody/tr/td[4]/a[1]    #查看详情
     ${wc}    list windows
     select window    ${wc[1]}
     sleep    2
@@ -315,7 +315,7 @@ Resource          资源库/Variables.txt
     sleep    2
     click link    id=stnav-598    #营销中心
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[2]/a[1]    #优惠券管理
+    click link    link=优惠券管理    #优惠券管理
     sleep    2
     click element    xpath=//*[@id="OneTable"]/tbody/tr[2]/td[10]/div/p[3]/input    #结束优惠券
     sleep    2
@@ -484,7 +484,7 @@ Resource          资源库/Variables.txt
     sleep    2
     click element    xpath=//*[@id="ctl00_ContentPlaceHolder1_grdManager"]/tbody/tr/td[8]/p/a    #查询积分明细
     sleep    2
-    ${后台获取积分}    get text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/table/tbody/tr[1]/td[3]    #获取最新笔订单积分
+    ${后台获取积分}    get text    xpath=//table/tbody/tr[1]/td[3]    #获取最新笔订单积分
     log    ${后台获取积分}
     should be equal as strings    ${Calculatpoint}    ${后台获取积分}
     #前台检查积分
@@ -505,7 +505,8 @@ Resource          资源库/Variables.txt
     select window    ${wc[0]}
     sleep    2
     #关闭购物送积分
-    click link    id=hnav-170
+    Reload Page    #刷新当前页
+    click link    link=营销
     sleep    2
     click link    id=stnav-598
     sleep    1
@@ -532,6 +533,7 @@ Resource          资源库/Variables.txt
     ${当前积分}    get text    id=NowPoints
     run keyword if    ${当前积分}==0    会员增加积分
     ...    ELSE    log    会员积分足够
+    Reload Page
     sleep    2
     #设置积分抵现
     click link    id=hnav-170
@@ -647,6 +649,7 @@ Resource          资源库/Variables.txt
     ${当前积分}    get text    id=NowPoints
     run keyword if    ${当前积分}==0    会员增加积分
     ...    ELSE    log    会员积分足够
+    Reload Page
     sleep    2
     #设置积分兑换活动
     click link    id=hnav-170
@@ -683,12 +686,12 @@ Resource          资源库/Variables.txt
     input text    name=pname    ${全局关键字}单规格商品
     click element    id=popbtn-query
     sleep    2
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[4]/p
-    input text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[4]/input[1]    100
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[5]/p
-    input text    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[5]/input    10
+    click element    xpath=//tbody/tr[2]/td[4]/p
+    input text    xpath=//tbody/tr[2]/td[4]/input[1]    100
+    click element    xpath=//tbody/tr[2]/td[5]/p
+    input text    xpath=//tbody/tr[2]/td[5]/input    10
     sleep    2
-    click button    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/ng-view/div/div/div/div[1]/div[2]/div[1]/table/tbody/tr[2]/td[7]/button[1]
+    click button    xpath=//tbody/tr[2]/td[7]/button[1]
     sleep    2
     click element    id=saveAllBtn
     sleep    2
@@ -696,7 +699,7 @@ Resource          资源库/Variables.txt
     page should contain    100
     page should contain    进行中
 
-X（积分--参与积分兑换活动）
+积分--参与积分兑换活动
     [Documentation]    依赖（0）（2）（4.1）（24.24）（15.1）
     #进入店铺主页配置店铺活动模块
     click link    id=hnav-1
@@ -705,7 +708,7 @@ X（积分--参与积分兑换活动）
     sleep    2
     click element    id=btn_edit
     sleep    2
-    click element    xpath=//html/body/div[2]/div/div[1]/div[2]/div/div/div/div/div[1]/div/ul/li[13]/div/i
+    click element    xpath=//div[1]/div/ul/li[13]/div/i
     sleep    2
     click element    xpath=//*[@id="diy-ctrl"]/div/ul/li[1]/div[2]/div/div/a/i
     sleep    1
@@ -716,9 +719,9 @@ X（积分--参与积分兑换活动）
     #进入前端,店铺活动页面
     click link    id=hnav-612
     sleep    2
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/a[2]
+    click link    link=访问店铺
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div[1]/div/div[2]/div/p[2]/a[2]
+    click link    link=电脑上查看
     ${wc}    list windows
     select window    ${wc[1]}
     sleep    2
@@ -735,7 +738,7 @@ X（积分--参与积分兑换活动）
     sleep    1
     click element    xpath=//body/div/div[2]/div[1]/a/p[2]    #立即参加
     会员登录    @{会员帐号}[0]
-    sleep    2
+    sleep    4
     Click Image    xpath=//*[@id="ListId"]/li/div/a/div/img
     sleep    1
     click element    xpath=/html/body/nav/a[4]/p    #积分兑换
@@ -781,6 +784,7 @@ X（积分--参与积分兑换活动）
     click element    id=batdel    #批量删除
     sleep    2
     click button    xpath=//*[@id="divbtn-cmf"]/button[1]    #确认删除
+    sleep    2
 
 满减--新增满减活动
     [Documentation]    依赖（0）
@@ -880,7 +884,7 @@ X（积分--参与积分兑换活动）
     input text    id=input-prodname    单规格
     click element    id=btn-query
     sleep    1
-    click link    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div/div[2]/div[2]/div[1]/div[2]/table/tbody/tr/td[2]/table/tbody/tr/td[4]/a[1]    #查看详情
+    click link    xpath=//table/tbody/tr/td[4]/a[1]    #查看详情
     ${wc}    list windows
     select window    ${wc[1]}
     sleep    2
@@ -897,7 +901,7 @@ X（积分--参与积分兑换活动）
     sleep    1
     click link    link=满减活动
     sleep    1
-    click element    xpath=//*[@id="allcontent"]/div/div[1]/div[2]/div/div[2]/div[2]/div/table/tbody/tr[2]/td[7]/p[2]/a
+    click link    link=结束
     sleep    1
     click element    xpath=//*[@id="popbtn-cnfgoon"]
     sleep    2

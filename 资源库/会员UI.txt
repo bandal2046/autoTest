@@ -1,6 +1,6 @@
 *** Variables ***
-${点击会员}           xpath=.//*[@id='hnav-15']/div/i
-${点击会员列表}         xpath=.//*[@id='sider']/nav/ul/li[1]/a[text()='会员列表']
+${点击会员}           link=会员
+${点击会员列表}         link=会员列表
 ${调整积分}           xpath=.//table[@id='ctl00_ContentPlaceHolder1_grdManager']/tbody/tr/td/div/p[4]
 ${查看积分}           xpath=.//table[@id='ctl00_ContentPlaceHolder1_grdManager']/tbody/tr/td/div/p[4]
 ${点击会员中心}         xpath=id('ul')/li[4]/div/a

@@ -1,18 +1,18 @@
 *** Settings ***
 Resource          Variables.txt
-Library           Selenium2Library
+Library           Selenium2Library    implicit_wait=10
 Resource          代理商UI.txt
 
 *** Keywords ***
 会员退出切回后台
-    [Arguments]    ${titles}    # 浏览器元组数
+    [Arguments]    ${wc}    # 浏览器元组数
     [Documentation]    调用该关键字，前提需当前浏览器显示为会员中心
     click element    xpath=//*[@id="to-setting"]/i    #点击设置
-    sleep    1
+    #sleep    1
     click element    id=btn-quit    #点击退出
-    sleep    1
+    #sleep    1
     close window
-    select window    ${titles[0]}    #切回后台
+    select window    ${wc[0]}    #切回后台
 
 进入前台页面
     click link    link=首页    #进入首页模块
@@ -21,12 +21,12 @@ Resource          代理商UI.txt
     sleep    1
     click element    link=电脑上查看    #点击电脑上查看
     sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到前台
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到前台
 
 切换到前台
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到商品详情页
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到商品详情页
 
 会员退出且切换到后台
     click element    xpath=//*[@id="to-setting"]/i    #点击设置
@@ -34,8 +34,8 @@ Resource          代理商UI.txt
     click element    id=btn-quit    #点击退出
     sleep    1
     close window
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[0]}    #跳转到后台
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[0]}    #跳转到后台
 
 会员登录
     [Arguments]    ${member}    # 会员账号
@@ -44,16 +44,16 @@ Resource          代理商UI.txt
     click button    id=btnUserLogin
 
 获取标题切换
-    ${titles}    Get Window Titles    #获取当前浏览器所有标题
-    select window    ${titles[1]}    #切至前台
-    [Return]    ${titles}
+    ${wc}    list windows    #获取当前浏览器所有标题
+    select window    ${wc[1]}    #切至前台
+    [Return]    ${wc}
 
 切换到后台
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[0]}    #切换到后台
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[0]}    #切换到后台
 
 创建退货物流地址
-    click link    link=设置    #点击商品模块进入商品模块
+    click link    link=系统    #点击商品模块进入商品模块
     sleep    2
     click element    id=stnav-234    #切换到物流地址
     sleep    2
@@ -100,22 +100,16 @@ Resource          代理商UI.txt
 会员注册
     [Arguments]    ${memberG}
     click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
-    sleep    2
-    click element    xpath=/html/body/div[1]/div/a    #点击注册
-    sleep    2
+    click element    xpath=/html/body/div[1]/div[3]/p/span[1]/a    #点击注册
     input text    id=uesrname    ${memberG}    #输入帐号
     input text    id=Code    7297    #输入验证码
     input text    id=pass    123456    #输入密码
     input text    id=passAgain    123456    #再次输入密码
-    sleep    1
     click button    id=RegisterMes    #点击注册
-    sleep    2
-    click element    xpath=//html/body/div[5]/div[2]/span    #点击注册提示确认
-    sleep    2
+    click element    xpath=/html/body/div[5]/div[2]/span    #点击注册提示确认
 
 新建运费模版
     click element    xpath=//*[@id="batchOp"]/a[2]    #点击新建通用模版按钮
-    sleep    2
     input text    id=templateName    通用模版测试    #输入模版名称
     #计价方式默认选择按件数    #是否包邮默认选择自定义
     input text    id=defaultFreight1    1
@@ -124,7 +118,6 @@ Resource          代理商UI.txt
     input text    id=addMoney1    0.5
     #以上计价规则，一件内1元，每增加1件加0.5元
     click button    id=btnSaveTemplate    #保存设置
-    sleep    4
     ${模版名称}    get text    xpath=//*[@id="FreightTemplateList"]/thead/tr/th[1]/label    #获取模版名称
     should contain    ${模版名称}    通用模版测试    msg=通用模版与预期值不符    #验证模版名称
     ${首件}    get text    xpath=//*[@id="FreightTemplateList"]/tbody/tr[2]/td[3]    #获取首件数量
@@ -137,57 +130,43 @@ Resource          代理商UI.txt
     should contain    ${增加运费}    0.5    msg=通用模版增加运费与预期值不符    #验证增加运费
     log    配置运费模版测试通过
     log    计价方式默认选择按件数,计价规则，一件内1元，每增加1件加0.5元
-    sleep    2
-    click link    link=设置
-    sleep    2
+    click link    link=系统
 
 注册店铺会员
+    [Timeout]
     click link    link=首页    #进入首页模块
-    sleep    2
     click element    link=访问店铺    #点击访问店铺
-    sleep    2
     click element    link=电脑上查看    #点击电脑上查看
-    sleep    2
-    ${titles}    Get Window Titles    #获取全部窗口
-    select window    ${titles[1]}    #跳转到前台
-    sleep    2
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #跳转到前台
     ${memberG}    set variable    @{会员帐号}[0]
     会员注册    ${memberG}
     ${a}    get text    xpath=/html/body/div[1]/header/section[1]/div[2]/p[1]    #获取前端会员名称
     should contain    ${a}    @{会员帐号}[0]    #验证前端会员名称
     log    前端验证会员成功
     click element    xpath=//*[@id="to-shipaddr"]/p    #点击收货地址
-    sleep    2
     click element    xpath=//*[@id="div-addradd"]/a    #点击新增收货地址
-    sleep    2
     input text    id=ShipTo    @{会员帐号}[0]    #填入收货人
     input text    id=CellPhone    @{会员帐号}[0]    #填入电话号码
     input text    id=address    我是详细地址。我是详细地址。我是详细地址    #填入详细地址
-    sleep    1
     click element    id=showCityPicker4    #点击选择收货地址
     sleep    1
     click element    id=100    #选择浙江省
     sleep    1
-    click element    id=101    #选择杭州市
+    click element    id=129    #选择温州市
     sleep    1
-    click element    id=102    #选择上城区
+    click element    id=132    #选择瓯海区
     sleep    1
-    click element    id=10201    #选择清波街道
-    sleep    2
+    click element    id=13203    #选择南白象街道
     click button    id=SaveAddress    #保存地址
-    sleep    2
-    click element    xpath=//*[@id="ul"]/li[4]/div    #点击导航菜单会员中心
-    sleep    2
-    会员退出切回后台    ${titles}
-    sleep    2
+    click element    xpath=//ul[@id="ul"]//a[contains(text(),"会员")]    #点击导航菜单会员中心
+    会员退出切回后台    ${wc}
     click link    link=会员    #进入首页模块
-    sleep    2
     ${b}    get text    xpath=//*[@id="ctl00_ContentPlaceHolder1_grdManager"]/tbody/tr/td[5]    #获取后台会员名称
     should contain    ${b}    @{会员帐号}[0]    #验证后台会员名称
     log    后端验证会员成功
     log    注册店铺会员测试成功
     click link    link=首页    #进入首页模块
-    sleep    2
 
 关闭注册送优惠券
     click element    xpath=//*[@id="divfailtips"]/div/div/span    #关闭提示
@@ -245,3 +224,31 @@ Resource          代理商UI.txt
     select from list by label    ${所在地区：县}    黄浦区
     input text    ${详细地址}    浦东新区港湾路315号
     sleep    1
+
+供应商登录
+    [Arguments]    ${gyuser}
+    [Documentation]    1：2948-店铺ID
+    ...    2：username-供应商账号
+    ...    3：secretKey-验证秘钥，开发更新到正式站点后，可能会更新该值
+    Go To    https://gys-online.xiaokeduo.com/mid/2948/Account/AutoSupplierLogin?UserName=${gyuser}&Password=123456&SecretKey=LVqdUEOxAQSQ5QbM
+    Go To    https://gys-online.xiaokeduo.com/mid/2948/ProxyProduct/Category    #跳转到供应商商品管理
+
+（本地）删除店铺导航
+    sleep    2
+    click element    xpath=//*[@id="ulmenu"]/li/a
+    sleep    2
+    click element    xpath=//*[@id="ulmenu"]/li/a/i
+    sleep    2
+    click button    id=popbtn-cnfgoon
+    sleep    2
+
+（本地）添加导航
+    [Arguments]    ${c}
+    Wait Until Element Is Enabled    xpath=//*[@id="addmenu"]
+    click element    xpath=//*[@id="addmenu"]    #添加一级导航
+    Wait Until Element Is Visible    xpath=//*[@id="spLinkTitle"]
+    click element    xpath=//*[@id="spLinkTitle"]    #选择链接
+    click element    xpath=//ul[@id="ul-dropdmenu"]//a[contains(text(),"${c}")]    #供应商申请
+    input text    xpath=//*[@id="txttitle"]    ${c}
+    click element    xpath=//*[@id="btnOK"]
+    sleep    2

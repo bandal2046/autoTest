@@ -1,0 +1,559 @@
+*** Settings ***
+Documentation     adb connect 127.0.0.1:62001
+Library           Selenium2Library    run_on_failure=Selenium2Library.Capture Page Screenshot
+Library           Screenshot
+Library           AutoItLibrary
+Resource          小程序/keys.txt
+Library           AppiumLibrary    run_on_failure=AppiumLibrary.Capture Page Screenshot
+Resource          小程序/publicModule.txt
+Resource          小程序/订单UI.txt
+
+*** Test Cases ***
+调整会员余额-开启余额支付
+    [Documentation]    1、打开小程序-获取会员昵称
+    ...    2、打开微商城后台-调整会员余额-开启余额支付
+    #获取会员昵称
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text="会员"]    #进入小程序会员中心
+    sleep    2
+    ${会员昵称}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[1]    name    #小程序会员昵称
+    #给指定会员调整余额
+    sleep    2
+    Selenium2Library.click link    link=会员    #进入会员模块
+    sleep    2
+    Selenium2Library.click element    id=stnav-86    #会员列表
+    sleep    2
+    Selenium2Library.input text    id=UserBindName    ${会员昵称}    #查询会员输入昵称
+    sleep    2
+    Selenium2Library.click button    id=btn_Search    #查询会员
+    sleep    2
+    Selenium2Library.click element    xpath=//*[@id="ctl00_ContentPlaceHolder1_grdManager"]/tbody/tr/td[11]/div/p[5]/a    #点击调整余额
+    sleep    2
+    Selenium2Library.input text    id=txtAmount    10000    #输入余额
+    Selenium2Library.input text    id=txtSetAmountBark    调整余额    #输入备注
+    sleep    1
+    Selenium2Library.click button    id=btnUpdateAmount    #保存
+    sleep    2
+    #检查余额支付是否开启
+    开启余额支付
+
+单规格-包邮订单
+    [Documentation]    1、小程序购买单规格指定商品
+    ...    2、获取商品详情页商品价格
+    ...    3、商品详情页提交订单
+    ...    4、支付详情页判断收货地址（有则跳过，无新建地址）
+    ...    5、支付详情页判断运费方式
+    ...    6、支付详情页判断支付合计
+    ...    7、支付详情页判断运费
+    ...    8、支付详情页提交订单
+    ...    9、订单列表获取订单编号
+    ...    10、订单列表判断订单合计
+    ...    11、商城后台发货
+    ...    12、小程序订单列表确认首付
+    #登录后台设置被测商品包邮
+    设置商品包邮
+    #打开小程序-下订单
+    选择预计购买的商品    ${单规格商品}
+    AppiumLibrary.click element    ${商品详情页点击立即购买}    #立即购买
+    #获取商品详情页商品价格
+    ${商品详情页商品价格}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[4]    name
+    log    ${商品详情页商品价格}    #￥50.00
+    ${商品详情页商品价格去符号}    Should Match Regexp    ${商品详情页商品价格}    \\d+    #正则去除￥
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"加入购物车\"]    #再次立即购买
+    sleep    3
+    收货地址设置
+    #获取支付详情页运费方式    #检查运费方式是否免运费
+    ${支付详情页运费方式}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[8]/android.view.View[2]    name
+    log    ${支付详情页运费方式}    #免运费 (快递发货)
+    should contain    ${支付详情页运费方式}    免运费
+    #获取支付详情页合计    #检查合计是否等于商品价格
+    ${支付详情页合计}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[15]/android.view.View[2]    name
+    log    ${支付详情页合计}    #￥50.00
+    should contain    ${支付详情页合计}    ${商品详情页商品价格去符号}
+    #获取支付详情页运费    #检查运费是否为0
+    ${支付详情页运费}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[14]/android.view.View[2]    name
+    log    ${支付详情页运费}    #+￥0.00
+    should contain    ${支付详情页运费}    0.00
+    选择余额支付且支付订单
+    ${b}    订单列表获取订单号
+    #获取订单列表实付价格
+    ${订单列表实付价格}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[10]    name
+    log    ${订单列表实付价格}    #共1件商品，实付：￥50
+    should contain    ${订单列表实付价格}    ${商品详情页商品价格去符号}
+    #打开浏览器-发货
+    后台发货    ${b}    #将订单列表传入后台发货
+    sleep    3
+    小程序端确认收货
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #返回小程序主页
+    #切换到浏览器-测试
+    Selenium2Library.click link    link=会员
+
+多规格-邮费订单
+    [Documentation]    1、配置运费模板
+    ...    2、小程序端选择多规格商品
+    ...    3、商品详情页获取商品价格，选择商品规格，提交订单
+    ...    4、订单提交页检查收货地址、选择配送方式、选择余额支付、获取运费，通过运费和商品价格计算应支付金额，获取实际支付，提交订单
+    ...    5、订单列表页获取订单实际支付和订单号，比较前后两个页面获取的价格
+    ...    6、后台发货
+    ...    7、小程序确认收货
+    配置运费模版
+    #后台设置被测商品邮费
+    Selenium2Library.click link    link=商品    #点击商品模块进入商品模块
+    sleep    2
+    Selenium2Library.click element    id=sells    #全选商品
+    sleep    1
+    Selenium2Library.click button    id=btn-setpsttmp    #设置运费
+    sleep    2
+    Selenium2Library.click element    id=FreightsId
+    sleep    1
+    Selenium2Library.click element    xpath=//*[@id="FreightsId"]/option[2]    #选择通用模版测试运费
+    sleep    1
+    Selenium2Library.click element    id=Freights    #确认
+    sleep    5
+    #打开小程序-下订单
+    选择预计购买的商品    ${多规格商品}
+    ${商品详情页商品价格}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[4]    name
+    log    ${商品详情页商品价格}    #￥500.00
+    ${商品详情页商品价格去符号}    Should Match Regexp    ${商品详情页商品价格}    \\d+    #正则去除运费符号
+    log    ${商品详情页商品价格去符号}    #500
+    Swipe    21    900    21    698    duration=2000
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[8]    #选择规格
+    sleep    2
+    #选择规格
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[4]    #选择规格为红色    ￥500.00
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[contains(@content-desc,"好评度")]    #再次立即购买
+    sleep    3
+    收货地址设置
+    #余额支付订单
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[13]    #选择余额支付
+    sleep    2
+    #选择运费模版
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="配送方式"]    #点击选择配送方式
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[15]    #选择快递
+    sleep    2
+    ${运费}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[15]/android.view.View[2]    name    #获取订单提交页实际运费
+    should contain    ${运费}    +￥1.00    #验证实际运费
+    ${运费去符号}    Should Match Regexp    ${运费}    \\d+    #正则去除运费符号
+    log    ${运费去符号}    #1
+    ${a}    Evaluate    int(${运费去符号})
+    ${b}    Evaluate    int(${商品详情页商品价格去符号})
+    ${计算实际支付}    Set variable    ${${a}+${b}}
+    ${实际支付金额}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[16]/android.view.View[2]    name    #获取订单提交页实际支付金额
+    ${实际支付金额去符号}    Should Match Regexp    ${实际支付金额}    \\d+    #实际支付金额去符号
+    should be equal as integers    ${实际支付金额去符号}    ${计算实际支付}    #验证实际支付金额是否与计算实际支付相等
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="余额支付"]    #余额立即支付
+    sleep    2
+    ${小程序订单号去文字}    订单列表获取订单号
+    ${小程序订单列表订单实付金额}    AppiumLibrary.Get Element Attribute    xpath=//android.view.View/android.view.View[10]    name    #小程序订单列表订单实付金额
+    should contain    ${小程序订单列表订单实付金额}    ${实际支付金额去符号}
+    后台发货    ${小程序订单号去文字}
+    sleep    3
+    小程序端确认收货
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #返回小程序主页
+    #切换到浏览器-测试
+    Selenium2Library.click link    link=会员
+
+购物车-完成订单检查销量和库存
+    [Documentation]    1、后台设置商品包邮，获取商品库存
+    ...    2、小程序端检查指定商品库存
+    ...    3、商品加入购物车购买
+    ...    4、订单完成后台再次检查商品库存
+    #登录后台设置被测商品包邮
+    设置商品包邮
+    #后台检查库存-销量
+    Selenium2Library.input text    id=ProductName    ${单规格商品}    #以商品名查询
+    Selenium2Library.click button    id=btnSearch    #执行查询
+    sleep    2
+    ${库存}    Selenium2Library.get text    xpath=//*[@id="list"]/tbody/tr/td[5]/div    #获取商品库存
+    log    ${库存}
+    ${销量}    Selenium2Library.get text    xpath=//*[@id="list"]/tbody/tr/td[6]/div    #获取商品销量
+    log    ${销量}
+    #打开小程序-下订单
+    选择预计购买的商品    ${单规格商品}
+    #获取小程序端商品销量
+    ${小程序端商品销量}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[6]    name
+    log    ${小程序端商品销量}    #销量X
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"加入购物车\"]    #加入购物车
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"购物车\"]    #加入购物车,小程序该界面会显示库存,默认添加1件商品到购物车
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="+1"]    #商品详情页点击购物车（带+标志）进入购物车提交页
+    sleep    2
+    #购物车提交页输入购买数量5
+    Repeat Keyword    4    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[4]    #连续点击4次添加商品，共计5件
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"全选\"]    #全选购物车订单
+    sleep    2
+    ${购物车内商品单价}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[3]/android.view.View[1]    name
+    ${购物车内商品单价去符号}    Should Match Regexp    ${购物车内商品单价}    \\d+    #购物车内商品单价去符号
+    ${a}    Evaluate    int(${购物车内商品单价去符号})
+    ${购物车内预计总金额}    Set variable    ${${a}*5}
+    ${购物车内实际总金额}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[5]/android.view.View[2]    name    #获取购物车内实际总金额
+    ${购物车内实际总金额去符号}    Should Match Regexp    ${购物车内实际总金额}    \\d+    #购物车内商品单价去符号
+    should be equal as integers    ${购物车内实际总金额去符号}    ${购物车内预计总金额}
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[6]    #点击结算
+    收货地址设置
+    #获取支付详情页合计    #检查合计是否等于商品价格
+    sleep    2
+    ${支付详情页合计}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[15]/android.view.View[2]    name
+    log    ${支付详情页合计}    #￥250.00
+    should contain    ${支付详情页合计}    ${购物车内实际总金额去符号}
+    选择余额支付且支付订单
+    ${b}    订单列表获取订单号
+    #获取订单列表实付价格
+    ${订单列表实付价格}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[10]    name
+    log    ${订单列表实付价格}    #共1件商品，实付：￥250
+    should contain    ${订单列表实付价格}    ${购物车内实际总金额去符号}
+    #打开浏览器-发货
+    后台发货    ${b}    #将订单列表传入后台发货
+    sleep    3
+    小程序端确认收货
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]
+    #小程序端检查销量
+    选择预计购买的商品    ${单规格商品}
+    #检查小程序端订单完成后销量结果
+    ${小程序端商品销量2}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[6]    name
+    log    ${小程序端商品销量2}    #销量+5
+    ${b}    Should Match Regexp    ${小程序端商品销量2}    \\d+    #正则去除￥
+    log    ${b}
+    ${小程序端商品销量去符号}    Should Match Regexp    ${小程序端商品销量}    \\d+    #正则去除￥
+    should be equal as integers    ${b}    ${${小程序端商品销量去符号}+5}
+    log    小程序端订单完成后销量结果计算正确
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #返回小程序主页
+    #后台检查库存-销量
+    Selenium2Library.click link    link=商品
+    sleep    2
+    Selenium2Library.input text    id=ProductName    ${单规格商品}    #以商品名查询
+    Selenium2Library.click button    id=btnSearch    #执行查询
+    sleep    2
+    ${库存2}    Selenium2Library.get text    xpath=//*[@id="list"]/tbody/tr/td[5]/div    #获取商品库存
+    log    ${库存2}
+    ${k1}    Evaluate    int(${库存2})
+    ${k2}    Set variable    ${${k1}+5}
+    should be equal as integers    ${k2}    ${库存}
+    ${销量2}    Selenium2Library.get text    xpath=//*[@id="list"]/tbody/tr/td[6]/div    #获取商品销量
+    log    ${销量2}
+    ${x1}    Evaluate    int(${销量2})
+    ${x2}    Set variable    ${${x1}-5}
+    should be equal as integers    ${x2}    ${销量}
+    sleep    2
+    Selenium2Library.click link    link=会员
+
+一单多件商品（单种商品）
+    [Documentation]    1、设置商品包邮
+    ...    2、获取商品价格（a）
+    ...    3、提交购买数量（5个）
+    ...    4、支付页验证订单总额（5a），提交订单
+    ...    5、订单列表页验证订单总额（5a）
+    ...    6、后台发货-小程序端确认收货
+    ...    7、后台检查订单总价和商品数（5a）
+    #登录后台设置被测商品包邮
+    设置商品包邮
+    #打开小程序-下订单
+    选择预计购买的商品    ${单规格商品}
+    AppiumLibrary.click element    ${商品详情页点击立即购买}    #立即购买
+    sleep    2
+    #获取商品详情页商品价格
+    ${商品详情页商品价格}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[4]    name
+    log    ${商品详情页商品价格}    #￥50.00
+    ${商品详情页商品价格去符号}    Should Match Regexp    ${商品详情页商品价格}    \\d+    #正则去除￥
+    sleep    2
+    #提交购买数量
+    Repeat Keyword    4    click a point    360    717    duration=1000
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"加入购物车\"]    #再次立即购买
+    收货地址设置
+    #获取支付详情页合计    #检查合计是否等于商品价格
+    sleep    2
+    ${支付详情页合计}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[15]/android.view.View[2]    name
+    log    ${支付详情页合计}    #￥250.00
+    ${支付详情页合计去符号}    Should Match Regexp    ${支付详情页合计}    \\d+    #正则去除￥
+    ${支付详情页合计去符号}    Set variable    ${${商品详情页商品价格去符号}*5}
+    选择余额支付且支付订单
+    ${b}    订单列表获取订单号
+    #获取订单列表实付价格
+    ${订单列表实付价格}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[10]    name
+    log    ${订单列表实付价格}    #共5件商品，实付：￥250
+    ${总价}    Evaluate    str(${支付详情页合计去符号})
+    should contain    ${订单列表实付价格}    ${总价}
+    ${订单列表库存}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[9]    name
+    should contain    ${订单列表库存}    5
+    #打开浏览器-发货
+    后台发货    ${b}    #将订单列表传入后台发货
+    sleep    3
+    小程序端确认收货
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #返回小程序主页
+    #后台检查订单总价和商品数
+    Selenium2Library.click link    link=订单
+    sleep    2
+    Selenium2Library.input text    id=input-ordernum    ${b}
+    Selenium2Library.click element    id=btn-query    #点击搜索
+    sleep    2
+    ${数量}    Selenium2Library.get text    xpath = //table[@class='table allmiddle']/tbody/tr/td[1]/table/tbody/tr/td[4]    #获取订单商品数
+    should contain    ${数量}    5
+    ${后台订单总金额}    Selenium2Library.get text    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[1]/p/strong    #获取订单总金额
+    ${后台订单总金额去符号}    Should Match Regexp    ${后台订单总金额}    \\d+    #正则去除￥
+    ${后台总价}    Evaluate    str(${后台订单总金额去符号})
+    should contain    ${订单列表实付价格}    ${后台总价}
+    sleep    2
+    Selenium2Library.click link    link=会员
+
+一单多件商品（多中商品）
+    [Documentation]    1、单规格加入购物车
+    ...    2、多规格加入购物车
+    ...    3、购物车检查单规格、多规格，提交订单
+    ...    4、支付页检查单规格、多规格，支付
+    ...    5、发-且确认收货
+    #登录后台设置被测商品包邮
+    设置商品包邮
+    #打开小程序-选择单规格商品
+    选择预计购买的商品    ${单规格商品}
+    #单规格提交购物车
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"加入购物车\"]    #加入购物车
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"购物车\"]    #加入购物车,小程序该界面会显示库存,默认添加1件商品到购物车
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"首页\"]    #返回首页
+    sleep    2
+    #打开小程序-选择多规格商品
+    选择预计购买的商品    ${多规格商品}
+    #多规格提交购物车
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"加入购物车\"]    #加入购物车
+    sleep    2
+    click a point    70    736    duration=1000
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"购物车\"]    #加入购物车,小程序该界面会显示库存,默认添加1件商品到购物车
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="+1"]    #商品详情页点击购物车（带+标志）进入购物车提交页
+    sleep    2
+    #购物车检查
+    page should contain text    单规格
+    page should contain text    多规格
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"全选\"]    #全选购物车订单
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="结算(2)"]    #点击结算
+    sleep    2
+    #订单支付页检查
+    page should contain text    单规格
+    page should contain text    多规格
+    收货地址设置
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[17]    #选择余额支付
+    sleep    1
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"余额支付\"]    #余额立即支付
+    sleep    5
+    ${b}    订单列表获取订单号
+    #打开浏览器-发货
+    后台发货    ${b}    #将订单列表传入后台发货
+    sleep    3
+    Selenium2Library.click button    xpath = //table[@class='table allmiddle']/tbody/tr/td[2]/table/tbody/tr/td[4]/input[7]    #点击发货
+    sleep    2
+    Selenium2Library.click button    id=popbtn-cnfgoon    #确认发货
+    sleep    3
+    Selenium2Library.click link    link=订单
+    #小程序初始化
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #点击返回上一页
+    sleep    2
+
+退款-退余额
+    [Documentation]    1、会员中心获取余额
+    ...    2、订单流程
+    ...    3、退款-退余额，退10元
+    ...    4、再次获取余额，判断是否计算正确
+    #登录后台设置被测商品包邮
+    设置商品包邮
+    #会员中心获取余额（退款前）
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text="会员"]    #进入小程序会员
+    sleep    3
+    ${退款前余额}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[7]    name
+    ${退款前余额去符号}    Should Match Regexp    ${退款前余额}    \\d+    #正则去除￥
+    sleep    1
+    #打开小程序-下订单
+    选择预计购买的商品    ${单规格商品}
+    AppiumLibrary.click element    ${商品详情页点击立即购买}    #立即购买
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"加入购物车\"]    #再次立即购买
+    sleep    2
+    收货地址设置
+    选择余额支付且支付订单
+    ${b}    订单列表获取订单号
+    退款/退货申请
+    后台处理退款订单
+    后台发放退款
+    #小程序端检查订单状态
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="售后服务"]    #切换到售后服务
+    sleep    2
+    page should not contain text    ${b}    #验证列表为内不包含已经处理退款的订单
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="全部"]    #切换到全部
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[7]    #点击需要退款的订单
+    sleep    2
+    page should contain text    已关闭    #验证订单状态为已关闭
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #点击返回上一页
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #点击返回上一页
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #点击返回上一页
+    sleep    2
+    #会员中心获取余额（退款后）
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text="会员"]    #进入小程序会员
+    sleep    3
+    ${退款后余额}    AppiumLibrary.get element attribute    xpath=//android.view.View/android.view.View[7]    name
+    ${退款后余额去符号}    Should Match Regexp    ${退款后余额}    \\d+    #正则去除￥
+    sleep    1
+    #小程序计算当前余额
+    ${退款前余额去符号}    Set variable    ${${退款后余额去符号}+40}
+    log    退款前后余额计算正确
+    sleep    2
+
+退货
+    [Documentation]    1、会员中心获取余额
+    ...    2、订单流程
+    ...    3、退款-退余额，退10元
+    ...    4、再次获取余额，判断是否计算正确
+    #登录后台设置被测商品包邮
+    设置商品包邮
+    #新建退货物流地址
+    新建退货物流地址
+    #打开小程序-下订单
+    选择预计购买的商品    ${单规格商品}
+    AppiumLibrary.click element    ${商品详情页点击立即购买}    #立即购买
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"加入购物车\"]    #再次立即购买
+    sleep    2
+    收货地址设置
+    选择余额支付且支付订单
+    ${b}    订单列表获取订单号
+    #后台发货
+    后台发货    ${b}    #将订单列表传入后台发货
+    sleep    3
+    退款/退货申请
+    后台处理退款订单
+    #小程序端寄货
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[7]    #点击需要退款的订单
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="售后中"]    #点击售后中
+    sleep    2
+    Swipe    161    1009    161    573    duration=2000
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="寄回商品"]    #点击寄回商品
+    sleep    5
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="请选择"]    #选择物流公司
+    sleep    2
+    click a point    72    599    duration=1000    #选择物流公司
+    sleep    2
+    AppiumLibrary.input text    xpath=//android.view.View[@content-desc="请填写物流单号"]    123456789    #输入物流单号
+    sleep    2
+    AppiumLibrary.input text    xpath=//android.view.View[@content-desc="请填写联系电话"]    18500000000    #输入联系电话
+    sleep    2
+    AppiumLibrary.input text    xpath=//android.view.View[@content-desc="请填写退款原因"]    test    #输入退款原因
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="提交物流信息"]    #提交退货
+    sleep    2
+    #后台发放退款
+    Selenium2Library.click link    link=订单    #切换到订单页
+    sleep    2
+    Selenium2Library.click element    id=stnav-84    #切换到售后订单
+    sleep    2
+    Selenium2Library.click element    xpath = //table[@class='table allmiddle']/tbody/tr/td/table/tbody/tr/td[5]/span/a    #点击退款审批
+    sleep    2
+    ${wc}    list windows    #获取全部窗口
+    select window    ${wc[1]}    #切换到退款详情页
+    sleep    2
+    ${退款备注信息}    Selenium2Library.get text    xpath = //*[@id="home"]/div[2]/table[4]/tbody/tr/td[3]/p[3]    #获取退款备注（用户退款备注）
+    should contain    ${退款备注信息}    test
+    Selenium2Library.click button    xpath=//*[@id="home"]/div[2]/table[4]/tbody/tr/td[4]/p/input    #确认收到退货
+    sleep    2
+    Selenium2Library.click button    id=popbtn-cnfgoon    #确认
+    sleep    2
+    sleep    3
+    close window
+    select window    ${wc[0]}
+    sleep    2
+    后台发放退款
+    #小程序端检查订单状态
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="售后服务"]    #切换到售后服务
+    sleep    2
+    page should not contain text    ${b}    #验证列表为内不包含已经处理退款的订单
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="全部"]    #切换到全部
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[7]    #点击需要退款的订单
+    sleep    2
+    page should contain text    已关闭    #验证订单状态为已关闭
+    sleep    2
+    log    退货测试通过
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #点击返回上一页
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #点击返回上一页
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #点击返回上一页
+    sleep    2
+
+订单评论
+    [Documentation]    1、订单流程
+    ...    2、完成订单，会员中心待评价，进行评价
+    ...    3、已评价验证
+    ...    4、商品详情页验证
+    #登录后台设置被测商品包邮
+    设置商品包邮
+    #打开小程序-下订单
+    选择预计购买的商品    ${单规格商品}
+    AppiumLibrary.click element    ${商品详情页点击立即购买}    #立即购买
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc=\"加入购物车\"]    #再次立即购买
+    sleep    3
+    收货地址设置
+    选择余额支付且支付订单
+    ${b}    订单列表获取订单号
+    #打开浏览器-发货
+    后台发货    ${b}    #将订单列表传入后台发货
+    sleep    3
+    小程序端确认收货
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #返回小程序主页
+    sleep    3
+    #切换到小程序会员中心
+    AppiumLibrary.click element    xpath=//android.widget.TextView[@text="会员"]    #小程序会员中心
+    sleep    3
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="待评价"]    #会员中心待评价
+    sleep    2
+    #评论晒图
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="评价晒单"]    #会员中心待评价
+    sleep    2
+    AppiumLibrary.input text    xpath=//android.widget.EditText[@text="商品满足您的期待吗？快写下您的商品评价，分享给想买的朋友吧！"]    ABCDEFGHIJK
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="提交"]    #提交评论
+    sleep    8
+    #已评论列表检查评论
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[2]    #切换到已评价
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View[@content-desc="查看评价"]    #点击查看评论
+    sleep    2
+    AppiumLibrary.page should contain text    ABCDEFGHIJK
+    sleep    2
+    #商品详情页检查评论
+    AppiumLibrary.click element    xpath=//android.widget.ImageView[@content-desc="返回"]    #返回前一页
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[2]    #切换到已评价
+    sleep    2
+    AppiumLibrary.click element    xpath=//android.view.View/android.view.View[6]    #选择已评论的商品（第一行数据）
+    sleep    2
+    swipe    166    1071    166    200    duration=1000
+    sleep    5
+    AppiumLibrary.page should contain text    ABCDEFGHIJK
+    log    订单评论测试通过
